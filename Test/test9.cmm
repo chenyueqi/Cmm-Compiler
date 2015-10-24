@@ -1,0 +1,12 @@
+int m1(int arg)
+{
+	int a ;
+	a = arg + 5;
+	return a;
+}
+
+int m2()
+{
+	int b = 2, c;
+	c = m1((b);
+}

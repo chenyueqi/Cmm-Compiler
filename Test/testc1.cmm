@@ -1,0 +1,12 @@
+struct Vector {
+	int a ;
+	int b;
+};
+
+int test()
+{
+	struct Vector v1;
+	v1.a = -1;
+	v1.b = v1.a + 2;
+	return v1.a - v1.b;
+}

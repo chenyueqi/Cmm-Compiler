@@ -1,0 +1,6 @@
+float main()
+{
+	float C_C = 4.23e.-1;
+	float A_A = 1.69e-1;
+	return C_C + A_A;
+}

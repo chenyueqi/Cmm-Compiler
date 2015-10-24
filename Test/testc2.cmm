@@ -1,0 +1,12 @@
+int test()
+{
+	int a[4][5];
+	int i = 0;
+	a[i][i] = 4;
+	while(i < 4){
+		a[i][0] = i;
+		a[1][i] = i + 1;
+		i = i + 1;
+	}
+	return a[0][0];
+}

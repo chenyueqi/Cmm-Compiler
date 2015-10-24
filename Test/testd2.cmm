@@ -1,0 +1,9 @@
+int main()
+{
+	float X_1 = 2.42e-3;
+	float X_2 = 1.12E2;
+	float X_3 = 66.2e+2;
+	float X_4 = 1.62E+2;
+	float X_5 = .221E-2;
+	float X_6 = 3.24e1;
+}

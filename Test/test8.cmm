@@ -1,0 +1,10 @@
+struct Vector{
+	float x , y;
+};
+
+int sdef()
+{
+	Vector v ;
+	v.x = v.y = 1.0;
+}
+

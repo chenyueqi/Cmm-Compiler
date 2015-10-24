@@ -1,0 +1,13 @@
+struct Vector{
+	float x , y;
+	int a , b;
+	float c , d;
+}
+
+int sdef()
+{
+	struct Vector v;
+	v.x = v.y = 1.0;
+	v.a = v.b = 1;
+	v.c = v.d = 3.5;
+}

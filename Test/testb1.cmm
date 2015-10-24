@@ -1,0 +1,20 @@
+struct Vector{
+	float x y;
+};
+
+float squaring(struct Vector v0 , struct Vector v1:)
+{
+	struct Vector c0 = v0;
+	struct Vector c1 = v1;
+	return (c0.x - c1.x) * (c0.y - c1.y);
+}
+
+float main()
+{
+	strut Vector v0 , v1;
+	v0.x = 1.2;
+	v0.y = 3.6;
+	v1.x = 4.5;
+	v1.y = 6.7;
+	return squaring(v0_0 , v0_1));
+}

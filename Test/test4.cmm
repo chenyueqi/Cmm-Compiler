@@ -1,0 +1,6 @@
+int func()
+{
+	int _a , b
+	b = 0;
+	_a = b + 1;
+}
