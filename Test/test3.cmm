@@ -1,13 +1,5 @@
-<<<<<<< HEAD
 int add()
 {
 	int a , b , c;
 	c = ((a + (b + 1));
 }
-=======
-int inc()
-{
-	int i;
-	i = i + 1;
-}
->>>>>>> origin/master

@@ -54,11 +54,7 @@ WHILE 		while
 
 INT		{digits}
 FLOAT		({digits}\.{digits})|({radix}[E|e][+-]?{digits})
-<<<<<<< HEAD
 ID		({letter}|_)({letter}|{digit}|_)*
-=======
-ID		{letter}({letter}|{digit}|_)*
->>>>>>> origin/master
 
 WHITESPACE	" "|"	"
 %%
@@ -93,11 +89,7 @@ WHITESPACE	" "|"	"
 \r		{}
 {WHITESPACE}	{/*printf("WHITESPACE: %s\t" , yytext);*/}
 
-<<<<<<< HEAD
 . 		{fprintf(stderr , "Error type A at Line %d: Mysterious characters %s\n" , yylineno , yytext); error_num ++;}
-=======
-. 		{printf("Error type A at Line %d: Mysterious characters %s\n" , yylineno , yytext); error_num ++;}
->>>>>>> origin/master
 %%
 void creat_node_token(YYSTYPE* yylval , int yylineno , int type , char *token_name , int token_length , char* yytext , int yyleng)
 {

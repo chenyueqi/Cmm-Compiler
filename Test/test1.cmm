@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 int main()
 {
 	int  _a_aaaaaaaaaa , 4b;
 }
-=======
-int main()
-{
-	int i = 1;
-	int j = 2;
-}
->>>>>>> origin/master
