@@ -53,7 +53,10 @@ ExtDefList : ExtDef ExtDefList {$$ = creat_node(2 , "ExtDefList" , &@$ ,  $1 , $
 ExtDef : Specifier ExtDecList SEMI {$$ = creat_node(3 , "ExtDef" , &@$ ,  $1 , $2 , $3);}
 | Specifier SEMI {$$ = creat_node(2 , "ExtDef" , &@$ ,  $1 , $2);}
 | Specifier FunDec CompSt {$$ = creat_node(3 , "ExtDef" , &@$ ,  $1 , $2 , $3);}
+<<<<<<< HEAD
 | error SEMI{}
+=======
+>>>>>>> origin/master
 ;
 ExtDecList : VarDec {$$ = creat_node(1 , "ExtDecList" , &@$ ,  $1);}
 | VarDec COMMA ExtDecList {$$ = creat_node(3 , "ExtDecList" , &@$ ,  $1 , $2 , $3);}
@@ -89,7 +92,10 @@ ParamDec : Specifier VarDec {$$ = creat_node(2 , "ParamDec" , &@$ ,  $1 , $2);}
 
 
 CompSt : LC DefList StmtList RC {$$ = creat_node(4 , "CompSt" , &@$ ,  $1 , $2 , $3 , $4);}
+<<<<<<< HEAD
 | error RC {}
+=======
+>>>>>>> origin/master
 ;
 StmtList : Stmt StmtList {$$ = creat_node(2 , "StmtList" , &@$ ,  $1 , $2);}
 | %empty {$$ = creat_node(0 , "StmtList" , &@$);}
@@ -145,6 +151,10 @@ Args : Exp COMMA Args {$$ = creat_node(3 , "Exp" , &@$ ,  $1 , $2 , $3);}
 yyerror(char *msg)
 {
 	error_num++;
+<<<<<<< HEAD
 	fprintf(stderr , "Error type B at Line %d : near '%s' %s\n" , yylineno ,  yytext , msg);
+=======
+	fprintf(stderr , "Error type B at Line %d : %s\n" , yylineno ,  msg);
+>>>>>>> origin/master
 }
 

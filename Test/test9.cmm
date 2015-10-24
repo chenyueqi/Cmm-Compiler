@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int m1(int arg)
 {
 	int a ;
@@ -10,3 +11,14 @@ int m2()
 	int b = 2, c;
 	c = m1((b);
 }
+=======
+int main()
+{
+	int j
+	int i = 0;
+	int k = 0;
+}
+int func()
+{
+
+>>>>>>> origin/master

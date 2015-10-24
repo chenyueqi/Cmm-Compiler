@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 int arrayDef()
 {
 	int i , a[2][100];
@@ -7,4 +8,14 @@ int arrayDef()
 		a[1,i] = i;
 		i = i + 1;
 	}
+=======
+struct Complex
+{
+	float real , image;
+};
+int main()
+{
+	struct Complex x;
+	y.image = 3.5;
+>>>>>>> origin/master
 }

@@ -43,6 +43,7 @@ int main(int argc , char** argv)
 			perror(argv[i]);
 			return 1;
 		}
+<<<<<<< HEAD
 		printf("========================\n");
 		printf("*** %s ***\n" , argv[i]);
 		yyrestart(f);
@@ -59,6 +60,21 @@ int main(int argc , char** argv)
 		fclose(f);
 	}
 	printf("========================\n");
+=======
+//		printf("========================\n");
+//		printf("*** %s ***\n" , argv[i]);
+		yyrestart(f);
+		yyparse();
+		if(error_num == 0)
+			display_tree(root , 0);
+		else
+			error_num = 0;
+		distroy_tree(root);
+		yylineno = 1;
+		fclose(f);
+	}
+//	printf("========================\n");
+>>>>>>> origin/master
 	return 0;
 }
 

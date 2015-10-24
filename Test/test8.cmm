@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 struct Vector{
 	float x , y;
 };
@@ -8,3 +9,9 @@ int sdef()
 	v.x = v.y = 1.0;
 }
 
+=======
+int main()
+{
+	int i
+}
+>>>>>>> origin/master
