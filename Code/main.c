@@ -3,25 +3,27 @@
 #include<string.h>
 #include"syntax.tab.h"
 #include<stdarg.h>
+#include"common.h"
 
 extern FILE* yyin;
 extern int yyparse(void);
 extern void yyrestart (FILE *input_file  );
 extern unsigned int error_num;
 
+/*
 struct tree_node
 {
 	int lineno;
-	int type;/*1: INT FLOAT TYPE ID 2:lexical 3:bison*/
+	int type;
 	char* unit_name;
 	char* token_name;
 	unsigned int children_num;
 	struct tree_node** children;
 };
-
+*/
 struct tree_node* root;
 
-void display_tree(struct tree_node* , int);// display syntax tree
+//void display_tree(struct tree_node* , int);// display syntax tree
 struct tree_node* creat_node(int arity , char *token_name , struct YYLTYPE* current_pos, ...);
 void distroy_tree(struct tree_node*);
 void display_float(char* p);// change float number string  to float type in c
@@ -49,7 +51,8 @@ int main(int argc , char** argv)
 		yyparse();
 		if(error_num == 0)
 		{
-			display_tree(root , 0);
+			Seman_analysis(root);
+	//		display_tree(root , 0);
 			distroy_tree(root);
 
 		}
@@ -128,7 +131,6 @@ void display_tree(struct tree_node* p , int count)
 			display_tree(p->children[i] , count + 2);
 		}
 	}
-//	printf("f**k tree\n");
 }
 
 void distroy_tree(struct tree_node* p )
@@ -145,7 +147,6 @@ void distroy_tree(struct tree_node* p )
 
 void display_float(char* p)
 {
-//	printf("FLOAT: %s\n" , p);
 	unsigned int pivot = 0;
 	float result = 0;
 	float integer = 0;

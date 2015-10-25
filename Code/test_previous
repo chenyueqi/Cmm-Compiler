@@ -1,0 +1,366 @@
+./parser ../Test/test1.cmm ../Test/test2.cmm ../Test/test3.cmm ../Test/test4.cmm ../Test/test5.cmm ../Test/test6.cmm ../Test/test7.cmm ../Test/test8.cmm ../Test/test9.cmm ../Test/testb1.cmm ../Test/testb2.cmm ../Test/testc1.cmm ../Test/testc2.cmm ../Test/testd2.cmm ../Test/teste2.cmm
+========================
+*** ../Test/test1.cmm ***
+========================
+*** ../Test/test2.cmm ***
+========================
+*** ../Test/test3.cmm ***
+========================
+*** ../Test/test4.cmm ***
+========================
+*** ../Test/test5.cmm ***
+========================
+*** ../Test/test6.cmm ***
+========================
+*** ../Test/test7.cmm ***
+========================
+*** ../Test/test8.cmm ***
+========================
+*** ../Test/test9.cmm ***
+========================
+*** ../Test/testb1.cmm ***
+========================
+*** ../Test/testb2.cmm ***
+========================
+*** ../Test/testc1.cmm ***
+here is semantic analysis !
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        StructSpecifier (1)
+          STRUCT
+          OptTag (1)
+            ID: Vector
+          LC
+          DefList (2)
+            Def (2)
+              Specifier (2)
+                TYPE: int
+              DecList (2)
+                Dec (2)
+                  VarDec (2)
+                    ID: a
+              SEMI
+            DefList (3)
+              Def (3)
+                Specifier (3)
+                  TYPE: int
+                DecList (3)
+                  Dec (3)
+                    VarDec (3)
+                      ID: b
+                SEMI
+          RC
+      SEMI
+    ExtDefList (6)
+      ExtDef (6)
+        Specifier (6)
+          TYPE: int
+        FunDec (6)
+          ID: test
+          LP
+          RP
+        CompSt (7)
+          LC
+          DefList (8)
+            Def (8)
+              Specifier (8)
+                StructSpecifier (8)
+                  STRUCT
+                  Tag (8)
+                    ID: Vector
+              DecList (8)
+                Dec (8)
+                  VarDec (8)
+                    ID: v1
+              SEMI
+          StmtList (9)
+            Stmt (9)
+              Exp (9)
+                Exp (9)
+                  Exp (9)
+                    ID: v1
+                  DOT
+                  ID: a
+                ASSIGNOP
+                Exp (9)
+                  MINUS
+                  Exp (9)
+                    INT: 1
+              SEMI
+            StmtList (10)
+              Stmt (10)
+                Exp (10)
+                  Exp (10)
+                    Exp (10)
+                      ID: v1
+                    DOT
+                    ID: b
+                  ASSIGNOP
+                  Exp (10)
+                    Exp (10)
+                      Exp (10)
+                        ID: v1
+                      DOT
+                      ID: a
+                    PLUS
+                    Exp (10)
+                      INT: 2
+                SEMI
+              StmtList (11)
+                stmt (11)
+                  RETURN
+                  Exp (11)
+                    Exp (11)
+                      Exp (11)
+                        ID: v1
+                      DOT
+                      ID: a
+                    MINUS
+                    Exp (11)
+                      Exp (11)
+                        ID: v1
+                      DOT
+                      ID: b
+                  SEMI
+          RC
+========================
+*** ../Test/testc2.cmm ***
+here is semantic analysis !
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      FunDec (1)
+        ID: test
+        LP
+        RP
+      CompSt (2)
+        LC
+        DefList (3)
+          Def (3)
+            Specifier (3)
+              TYPE: int
+            DecList (3)
+              Dec (3)
+                VarDec (3)
+                  VarDec (3)
+                    VarDec (3)
+                      ID: a
+                    LB
+                    INT: 4
+                    RB
+                  LB
+                  INT: 5
+                  RB
+            SEMI
+          DefList (4)
+            Def (4)
+              Specifier (4)
+                TYPE: int
+              DecList (4)
+                Dec (4)
+                  VarDec (4)
+                    ID: i
+                  ASSIGNOP
+                  Exp (4)
+                    INT: 0
+              SEMI
+        StmtList (5)
+          Stmt (5)
+            Exp (5)
+              Exp (5)
+                Exp (5)
+                  Exp (5)
+                    ID: a
+                  LB
+                  Exp (5)
+                    ID: i
+                  RB
+                LB
+                Exp (5)
+                  ID: i
+                RB
+              ASSIGNOP
+              Exp (5)
+                INT: 4
+            SEMI
+          StmtList (6)
+            stmt (6)
+              WHILE
+              LP
+              Exp (6)
+                Exp (6)
+                  ID: i
+                RELOP
+                Exp (6)
+                  INT: 4
+              RP
+              stmt (6)
+                CompSt (6)
+                  LC
+                  StmtList (7)
+                    Stmt (7)
+                      Exp (7)
+                        Exp (7)
+                          Exp (7)
+                            Exp (7)
+                              ID: a
+                            LB
+                            Exp (7)
+                              ID: i
+                            RB
+                          LB
+                          Exp (7)
+                            INT: 0
+                          RB
+                        ASSIGNOP
+                        Exp (7)
+                          ID: i
+                      SEMI
+                    StmtList (8)
+                      Stmt (8)
+                        Exp (8)
+                          Exp (8)
+                            Exp (8)
+                              Exp (8)
+                                ID: a
+                              LB
+                              Exp (8)
+                                INT: 1
+                              RB
+                            LB
+                            Exp (8)
+                              ID: i
+                            RB
+                          ASSIGNOP
+                          Exp (8)
+                            Exp (8)
+                              ID: i
+                            PLUS
+                            Exp (8)
+                              INT: 1
+                        SEMI
+                      StmtList (9)
+                        Stmt (9)
+                          Exp (9)
+                            Exp (9)
+                              ID: i
+                            ASSIGNOP
+                            Exp (9)
+                              Exp (9)
+                                ID: i
+                              PLUS
+                              Exp (9)
+                                INT: 1
+                          SEMI
+                  RC
+            StmtList (11)
+              stmt (11)
+                RETURN
+                Exp (11)
+                  Exp (11)
+                    Exp (11)
+                      ID: a
+                    LB
+                    Exp (11)
+                      INT: 0
+                    RB
+                  LB
+                  Exp (11)
+                    INT: 0
+                  RB
+                SEMI
+        RC
+========================
+*** ../Test/testd2.cmm ***
+here is semantic analysis !
+Program (1)
+  ExtDefList (1)
+    ExtDef (1)
+      Specifier (1)
+        TYPE: int
+      FunDec (1)
+        ID: main
+        LP
+        RP
+      CompSt (2)
+        LC
+        DefList (3)
+          Def (3)
+            Specifier (3)
+              TYPE: float
+            DecList (3)
+              Dec (3)
+                VarDec (3)
+                  ID: X_1
+                ASSIGNOP
+                Exp (3)
+                  FLOAT: 0.002420
+            SEMI
+          DefList (4)
+            Def (4)
+              Specifier (4)
+                TYPE: float
+              DecList (4)
+                Dec (4)
+                  VarDec (4)
+                    ID: X_2
+                  ASSIGNOP
+                  Exp (4)
+                    FLOAT: 112.000000
+              SEMI
+            DefList (5)
+              Def (5)
+                Specifier (5)
+                  TYPE: float
+                DecList (5)
+                  Dec (5)
+                    VarDec (5)
+                      ID: X_3
+                    ASSIGNOP
+                    Exp (5)
+                      FLOAT: 6620.000000
+                SEMI
+              DefList (6)
+                Def (6)
+                  Specifier (6)
+                    TYPE: float
+                  DecList (6)
+                    Dec (6)
+                      VarDec (6)
+                        ID: X_4
+                      ASSIGNOP
+                      Exp (6)
+                        FLOAT: 162.000000
+                  SEMI
+                DefList (7)
+                  Def (7)
+                    Specifier (7)
+                      TYPE: float
+                    DecList (7)
+                      Dec (7)
+                        VarDec (7)
+                          ID: X_5
+                        ASSIGNOP
+                        Exp (7)
+                          FLOAT: 0.002210
+                    SEMI
+                  DefList (8)
+                    Def (8)
+                      Specifier (8)
+                        TYPE: float
+                      DecList (8)
+                        Dec (8)
+                          VarDec (8)
+                            ID: X_6
+                          ASSIGNOP
+                          Exp (8)
+                            FLOAT: 32.400002
+                      SEMI
+        RC
+========================
+*** ../Test/teste2.cmm ***
+========================
