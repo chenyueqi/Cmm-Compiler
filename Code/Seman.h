@@ -1,3 +1,7 @@
+#ifndef __SEMAN__
+#define __SEMAN__
+
+
 typedef struct Type_* Type;
 typedef struct FieldList_* FieldList;
 typedef enum Bool bool;
@@ -22,42 +26,23 @@ struct FieldList_
 	FieldList next;
 };
 
-
-
-/* the information of struct type*/
-struct CharactInfoEntry_Struct
-{
-	int valid;
-	int lineNumber;
-	char* Struct_name;
-	FieldList entry;
-};
-struct CharactInfoEntry_Struct StructTable[10];
+void FillFieldList(FieldList target , FieldList origin);
+void FillType(Type target , Type origin);
 
 
 
-/*the information of id*/
-struct CharactInfoEntry_Id
-{
-	int valid;
-	int lineNumber;
-	FieldList entry;
-};
-struct CharactInfoEntry_Id IdTable[10];
 
+void CurrentExtDef(struct tree_node* p);	
 
+Type CurrentSpecifier(struct tree_node* p);
 
-/* the information of function*/
-struct CharactInfoEntry_Func
-{
-	int valid;// if current entry is valid , 1 ,else 0
-	char* func_name;
-	int lineNumber;
-	Type return_type;
-	int para_amount;
-	Type* parameter;
-};
+void CurrentExtDecList(Type inh , struct tree_node* p);
 
-struct CharactInfoEntry_Func FuncTable[10];
+Type CurrentStructSpecifier(struct tree_node* p);
 
-void Creat_Struct_or_Id(struct tree_node* p);
+void CurrentExtDecList(Type inh , struct tree_node* p);
+
+void CurrentVarDec(Type inh , struct tree_node* p);
+
+FieldList CurrentDefList(struct tree_node* p);
+#endif

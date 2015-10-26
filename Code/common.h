@@ -2,7 +2,10 @@
 #include<string.h>
 #include<stdlib.h>
 
-#define DEBUG
+#ifndef __COMMON__
+#define __COMMON__
+
+//#define DEBUG
 
 struct tree_node
 {
@@ -17,3 +20,5 @@ struct tree_node
 void Seman_analysis(struct tree_node* root);
 
 void display_tree(struct tree_node* , int);//display syntax tree
+
+#endif

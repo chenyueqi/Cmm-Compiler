@@ -13,7 +13,9 @@ bool CheckStructTable(struct CharactInfoEntry_Struct* p)
 #endif
 #ifndef DEBUG
 			if(IsHomoStruct(StructTable[i].entry , p->entry))
+			{
 				return FALSE;
+			}
 #endif
 	}
 	return TRUE;
@@ -72,44 +74,4 @@ void WriteStructTable(struct CharactInfoEntry_Struct* p , int lineNumber)
 	FillFieldList(StructTable[i].entry , p->entry);
 }
 
-void FillFieldList(FieldList target , FieldList origin)
-{
-	if(origin == NULL)
-	{
-		target = NULL;
-		return;
-	}
-
-	target = (FieldList)malloc(sizeof(struct FieldList_));
-
-	int length = strlen(origin->name);
-	target->name = (char*)malloc(sizeof(char) * (length + 1));
-	strcpy(target->name , origin->name);
-
-	FillType(target->type , origin->type);
-
-	FillFieldList(target->next , origin->next);
-}
-
-void FillType(Type target , Type origin)
-{
-	if(origin == NULL)
-	{
-		target = NULL;
-		return;	
-	}
-
-	target = (Type)malloc(sizeof(struct Type_));
-
-	target->kind = origin->kind;
-	if(origin->kind == BASIC)
-		target->u.basic = origin->u.basic;
-	else if(origin->kind == ARRAY)
-	{
-		FillType(target->u.array.elem , origin->u.array.elem);
-		target->u.array.size = origin->u.array.size;
-	}
-	else if(origin->kind == STRUCT)
-		FillFieldList(target->u.structure , origin->u.structure);
-}
 

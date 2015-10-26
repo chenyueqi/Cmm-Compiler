@@ -1,0 +1,111 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+ARRAY	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	e	enum:Type_::__anon1
+Args	syntax.y	/^Args : Exp COMMA Args {$$ = creat_node(3 , "Exp" , &@$ ,  $1 , $2 , $3);}	$/;"	l
+BASIC	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	e	enum:Type_::__anon1
+BISON	Makefile	/^BISON = bison$/;"	m
+Bool	Seman.h	/^enum Bool {FALSE , TRUE};$/;"	g
+CC	Makefile	/^CC = gcc$/;"	m
+CFILES	Makefile	/^CFILES = $(shell find .\/ -name "*.c")$/;"	m
+CFLAGS	Makefile	/^CFLAGS = -std=c99$/;"	m
+CharactInfoEntry_Func	FuncTable.h	/^struct CharactInfoEntry_Func$/;"	s
+CharactInfoEntry_Id	IdTable.h	/^struct CharactInfoEntry_Id$/;"	s
+CharactInfoEntry_Struct	StructTable.h	/^struct CharactInfoEntry_Struct$/;"	s
+CheckStructTable	StructTable.c	/^bool CheckStructTable(struct CharactInfoEntry_Struct* p)$/;"	f
+CompSt	syntax.y	/^CompSt : LC DefList StmtList RC {$$ = creat_node(4 , "CompSt" , &@$ ,  $1 , $2 , $3 , $4);}$/;"	l
+CurrentExtDecList	Seman.c	/^void CurrentExtDecList(Type inh , struct tree_node* p)$/;"	f
+CurrentExtDef	Seman.c	/^void CurrentExtDef(struct tree_node* p)$/;"	f
+CurrentSpecifier	Seman.c	/^Type CurrentSpecifier(struct tree_node* p)$/;"	f
+CurrentStructSpecifier	Seman.c	/^Type CurrentStructSpecifier(struct tree_node* p)$/;"	f
+CurrentVarDec	Seman.c	/^void CurrentVarDec(Type inh , struct tree_node* p)$/;"	f
+Dec	syntax.y	/^Dec : VarDec {$$ = creat_node(1 , "Dec" , &@$ ,  $1);}$/;"	l
+DecList	syntax.y	/^DecList : Dec {$$ = creat_node(1 , "DecList" , &@$ , $1);}$/;"	l
+Def	syntax.y	/^Def : Specifier DecList SEMI {$$ = creat_node(3 , "Def" , &@$ ,  $1 , $2 , $3);}$/;"	l
+DefList	syntax.y	/^DefList : Def DefList {$$ = creat_node(2 , "DefList" , &@$ ,  $1 , $2);}$/;"	l
+Exp	syntax.y	/^Exp : Exp ASSIGNOP Exp {$$ = creat_node(3 , "Exp" , &@$ ,  $1 , $2 , $3);}$/;"	l
+ExtDecList	syntax.y	/^ExtDecList : VarDec {$$ = creat_node(1 , "ExtDecList" , &@$ ,  $1);}$/;"	l
+ExtDef	syntax.y	/^ExtDef : Specifier ExtDecList SEMI {$$ = creat_node(3 , "ExtDef" , &@$ ,  $1 , $2 , $3);}$/;"	l
+ExtDefList	syntax.y	/^ExtDefList : ExtDef ExtDefList {$$ = creat_node(2 , "ExtDefList" , &@$ ,  $1 , $2);}$/;"	l
+FALSE	Seman.h	/^enum Bool {FALSE , TRUE};$/;"	e	enum:Bool
+FLEX	Makefile	/^FLEX = flex$/;"	m
+FieldList	Seman.h	/^typedef struct FieldList_* FieldList;$/;"	t	typeref:struct:FieldList_
+FieldList_	Seman.h	/^struct FieldList_$/;"	s
+FillFieldList	Seman.c	/^void FillFieldList(FieldList target , FieldList origin)$/;"	f
+FillType	Seman.c	/^void FillType(Type target , Type origin)$/;"	f
+FunDec	syntax.y	/^FunDec : ID LP VarList RP {$$ = creat_node(4 , "FunDec" , &@$ ,  $1 , $2 , $3 , $4);}$/;"	l
+FuncTable	FuncTable.h	/^struct CharactInfoEntry_Func FuncTable[10];$/;"	v	typeref:struct:CharactInfoEntry_Func
+IdTable	IdTable.h	/^struct CharactInfoEntry_Id IdTable[10];$/;"	v	typeref:struct:CharactInfoEntry_Id
+Id_name	IdTable.h	/^	char* Id_name;$/;"	m	struct:CharactInfoEntry_Id
+IsHomoStruct	StructTable.c	/^bool IsHomoStruct(FieldList target , FieldList origin)$/;"	f
+IsHomoType	StructTable.c	/^bool IsHomoType(Type target , Type origin)$/;"	f
+IsSameName	IdTable.c	/^bool IsSameName(char *name)$/;"	f
+LFC	Makefile	/^LFC = $(shell find .\/ -name "*.l" | sed s\/[^\/]*\\\\.l\/lex.yy.c\/)$/;"	m
+LFILE	Makefile	/^LFILE = $(shell find .\/ -name "*.l")$/;"	m
+LFO	Makefile	/^LFO = $(LFC:.c=.o)$/;"	m
+OBJS	Makefile	/^OBJS = $(CFILES:.c=.o)$/;"	m
+OptTag	syntax.y	/^OptTag : ID {$$ = creat_node(1 , "OptTag" , &@$ ,  $1);}$/;"	l
+ParamDec	syntax.y	/^ParamDec : Specifier VarDec {$$ = creat_node(2 , "ParamDec" , &@$ ,  $1 , $2);}$/;"	l
+Program	syntax.y	/^Program : ExtDefList {$$ = creat_node(1 , "Program" , &@$ ,  $1); root = $$;}$/;"	l
+STRUCT	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	e	enum:Type_::__anon1
+Seman_analysis	Seman.c	/^void Seman_analysis(struct tree_node* p)$/;"	f
+Specifier	syntax.y	/^Specifier : TYPE {$$ = creat_node(1 , "Specifier" , &@$ ,  $1);}$/;"	l
+Stmt	syntax.y	/^Stmt : Exp SEMI {$$ = creat_node(2 , "Stmt" , &@$ ,  $1 , $2);}$/;"	l
+StmtList	syntax.y	/^StmtList : Stmt StmtList {$$ = creat_node(2 , "StmtList" , &@$ ,  $1 , $2);}$/;"	l
+StructSpecifier	syntax.y	/^StructSpecifier : STRUCT OptTag LC DefList RC {$$ = creat_node(5 , "StructSpecifier" , &@$ ,  $1 , $2 , $3 , $4 , $5);}$/;"	l
+StructTable	StructTable.h	/^struct CharactInfoEntry_Struct StructTable[10];$/;"	v	typeref:struct:CharactInfoEntry_Struct
+Struct_name	StructTable.h	/^	char* Struct_name;$/;"	m	struct:CharactInfoEntry_Struct
+TESTFILE	Makefile	/^TESTFILE = $(shell find ..\/Test\/ -name "*.cmm" | sort )$/;"	m
+TRUE	Seman.h	/^enum Bool {FALSE , TRUE};$/;"	e	enum:Bool
+Tag	syntax.y	/^Tag : ID {$$ = creat_node(1 , "Tag" , &@$ ,  $1);}$/;"	l
+Type	Seman.h	/^typedef struct Type_* Type;$/;"	t	typeref:struct:Type_
+Type_	Seman.h	/^struct Type_$/;"	s
+VarDec	syntax.y	/^VarDec : ID {$$ = creat_node(1 , "VarDec" , &@$ ,  $1);}$/;"	l
+VarList	syntax.y	/^VarList : ParamDec COMMA VarList {$$ = creat_node(3 , "VarList" , &@$ ,  $1 , $2 , $3);}$/;"	l
+WriteIdTable	IdTable.c	/^void WriteIdTable(Type inh , char* name)$/;"	f
+WriteStructTable	StructTable.c	/^void WriteStructTable(struct CharactInfoEntry_Struct* p , int lineNumber)$/;"	f
+YFC	Makefile	/^YFC = $(shell find .\/ -name "*.y" | sed s\/[^\/]*\\\\.y\/syntax.tab.c\/)$/;"	m
+YFILE	Makefile	/^YFILE = $(shell find .\/ -name "*.y")$/;"	m
+YFO	Makefile	/^YFO = $(YFC:.c=.o)$/;"	m
+__COMMON__	common.h	6;"	d
+__ID__	IdTable.h	4;"	d
+__SEMAN__	Seman.h	2;"	d
+__STRUCT__	StructTable.h	3;"	d
+array	Seman.h	/^		struct{Type elem; int size;}array;$/;"	m	union:Type_::__anon2	typeref:struct:Type_::__anon2::__anon3
+basic	Seman.h	/^		int basic;\/\/if Int basic = 0 , if Float basic = 1$/;"	m	union:Type_::__anon2
+bool	Seman.h	/^typedef enum Bool bool;$/;"	t	typeref:enum:Bool
+children	common.h	/^	struct tree_node** children;$/;"	m	struct:tree_node	typeref:struct:tree_node::tree_node
+children_num	common.h	/^	unsigned int children_num;$/;"	m	struct:tree_node
+creat_node	main.c	/^struct tree_node* creat_node(int arity , char* token_name , struct YYLTYPE* current_pos, ...)$/;"	f
+display_float	main.c	/^void display_float(char* p)$/;"	f
+display_tree	main.c	/^void display_tree(struct tree_node* p , int count)$/;"	f
+distroy_tree	main.c	/^void distroy_tree(struct tree_node* p )$/;"	f
+elem	Seman.h	/^		struct{Type elem; int size;}array;$/;"	m	struct:Type_::__anon2::__anon3
+entry	StructTable.h	/^	FieldList entry;$/;"	m	struct:CharactInfoEntry_Struct
+func_name	FuncTable.h	/^	char* func_name;$/;"	m	struct:CharactInfoEntry_Func
+kind	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	m	struct:Type_	typeref:enum:Type_::__anon1
+lineNumber	FuncTable.h	/^	int lineNumber;$/;"	m	struct:CharactInfoEntry_Func
+lineNumber	StructTable.h	/^	int lineNumber;$/;"	m	struct:CharactInfoEntry_Struct
+lineno	common.h	/^	int lineno;$/;"	m	struct:tree_node
+main	main.c	/^int main(int argc , char** argv)$/;"	f
+name	Seman.h	/^	char* name;$/;"	m	struct:FieldList_
+next	Seman.h	/^	FieldList next;$/;"	m	struct:FieldList_
+para_amount	FuncTable.h	/^	int para_amount;$/;"	m	struct:CharactInfoEntry_Func
+parameter	FuncTable.h	/^	Type* parameter;$/;"	m	struct:CharactInfoEntry_Func
+return_type	FuncTable.h	/^	Type return_type;$/;"	m	struct:CharactInfoEntry_Func
+root	main.c	/^struct tree_node* root;$/;"	v	typeref:struct:tree_node
+size	Seman.h	/^		struct{Type elem; int size;}array;$/;"	m	struct:Type_::__anon2::__anon3
+structure	Seman.h	/^		FieldList structure;$/;"	m	union:Type_::__anon2
+token_name	common.h	/^	char* token_name;$/;"	m	struct:tree_node
+tree_node	common.h	/^struct tree_node$/;"	s
+type	IdTable.h	/^	Type type;$/;"	m	struct:CharactInfoEntry_Id
+type	Seman.h	/^	Type type;$/;"	m	struct:FieldList_
+type	common.h	/^	int type;\/*1:INT FLOAT TYPE ID 2:lexical 3:bison*\/$/;"	m	struct:tree_node
+u	Seman.h	/^	}u;$/;"	m	struct:Type_	typeref:union:Type_::__anon2
+unit_name	common.h	/^	char* unit_name;$/;"	m	struct:tree_node
+valid	FuncTable.h	/^	int valid;$/;"	m	struct:CharactInfoEntry_Func
+valid	IdTable.h	/^	int valid;$/;"	m	struct:CharactInfoEntry_Id
+valid	StructTable.h	/^	int valid;$/;"	m	struct:CharactInfoEntry_Struct
