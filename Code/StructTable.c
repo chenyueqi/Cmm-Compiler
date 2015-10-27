@@ -39,8 +39,10 @@ bool IsHomoType(Type target , Type origin)
 	if(target->kind != origin->kind)
 		return FALSE;
 	if(origin->kind == BASIC)
+	{
 		if(target->u.basic != origin->u.basic)
 			return FALSE;
+	}
 	else if(origin->kind == ARRAY)
 	{
 		if(target->u.array.size != origin->u.array.size)
@@ -50,10 +52,11 @@ bool IsHomoType(Type target , Type origin)
 	}
 	else if(origin->kind == STRUCT)
 		return IsHomoStruct(target->u.structure , origin->u.structure);
+	return FALSE;
 
 }
 
-void WriteStructTable(struct CharactInfoEntry_Struct* p , int lineNumber)
+void WriteStructTable(FieldList p , char* name)
 {
 	int i = 0;
 	for(; i < 10 ; i++)
@@ -62,16 +65,37 @@ void WriteStructTable(struct CharactInfoEntry_Struct* p , int lineNumber)
 			break;
 	}
 
+	/*TODO*/
 	/* to make sure that the array is not full DO something*/
 
 	StructTable[i].valid = 1;
-	StructTable[i].lineNumber = p->lineNumber;
 
-	int length = strlen(p->Struct_name);
-	StructTable[i].Struct_name = (char*)malloc(sizeof(char) * (length + 1));
-	strcpy(StructTable[i].Struct_name , p->Struct_name);
+	if(name == NULL)
+		StructTable[i].Struct_name = NULL;
+	else
+	{
+		int length = strlen(name);
+		StructTable[i].Struct_name = (char*)malloc(sizeof(char) * (length + 1));
+		strcpy(StructTable[i].Struct_name , name);
+	}
 
-	FillFieldList(StructTable[i].entry , p->entry);
+//	FillFieldList(StructTable[i].entry , p);
+	StructTable[i].entry = p;
 }
 
+FieldList FindStruct(char* name)
+{
+	int i = 0;
+	for(; i < 10 ; i++)
+	{
+		if(StructTable[i].valid == 1)
+		{
+			if(StructTable[i].Struct_name == NULL)
+				continue;
+			else if(!strcmp(StructTable[i].Struct_name , name))
+				return StructTable[i].entry;
+		}
+	}
+	return NULL;
+}
 

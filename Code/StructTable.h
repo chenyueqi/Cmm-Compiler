@@ -14,10 +14,12 @@ struct CharactInfoEntry_Struct StructTable[10];
 
 bool CheckStructTable(struct CharactInfoEntry_Struct* p);
 
+FieldList FindStruct(char* name);
+
 bool IsHomoStruct(FieldList target , FieldList origin);
 
 bool IsHomoType(Type target , Type origin);
 
-void WriteStructTable(struct CharactInfoEntry_Struct* p , int lineNumber);
+void WriteStructTable(FieldList p , char* name);
 
 #endif

@@ -149,8 +149,8 @@ void display_float(char* p)
 {
 	unsigned int pivot = 0;
 	float result = 0;
-	float integer = 0;
-	float decimal = 0;
+//	float integer = 0;
+//	float decimal = 0;
 	while(p[pivot] != '\0')
 	{
 		if( (p[pivot] == 'e') || (p[pivot] == 'E'))

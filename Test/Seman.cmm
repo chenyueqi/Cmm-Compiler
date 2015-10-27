@@ -1,2 +1,11 @@
 int i ;
-int i ;
+int a ;
+int b ;
+struct b
+{
+	int a = 0;
+	int b;
+	int b;
+};
+
+struct a k;

@@ -26,23 +26,42 @@ struct FieldList_
 	FieldList next;
 };
 
-void FillFieldList(FieldList target , FieldList origin);
+
+//void FillFieldList(FieldList target , FieldList origin);
 void FillType(Type target , Type origin);
+bool IsSameName(char* name);
 
 
 
+void CurrentProgram(struct tree_node* p);
+
+void CurrentExtDefList(struct tree_node* p);
 
 void CurrentExtDef(struct tree_node* p);	
 
 Type CurrentSpecifier(struct tree_node* p);
 
+char* CurrentTag(struct tree_node* p);
+
+char* CurrentOptTag(struct tree_node* p);
+
 void CurrentExtDecList(Type inh , struct tree_node* p);
 
 Type CurrentStructSpecifier(struct tree_node* p);
 
-void CurrentExtDecList(Type inh , struct tree_node* p);
+Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure);
 
-void CurrentVarDec(Type inh , struct tree_node* p);
+FieldList CurrentDefList(struct tree_node* p , bool InStructure);
 
-FieldList CurrentDefList(struct tree_node* p);
+Type CurrentDef(struct tree_node* p , bool InStructure);
+
+void CurrentDecList(Type inh , struct tree_node* p , bool InStructure);
+
+void CurrentDec(Type inh , struct tree_node* p , bool InStructure);
+
+void CurrentFunDec(Type inh , struct tree_node* p);
+
+FieldList CurrentVarList(struct tree_node* p , int* para_amount);
+
+Type CurrentParamDec(struct  tree_node* p);
 #endif
