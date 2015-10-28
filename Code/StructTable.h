@@ -22,4 +22,6 @@ bool IsHomoType(Type target , Type origin);
 
 void WriteStructTable(FieldList p , char* name);
 
+bool IsSameInStruct(FieldList origin , char* name);
+
 #endif

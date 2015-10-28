@@ -29,7 +29,7 @@ struct FieldList_
 
 //void FillFieldList(FieldList target , FieldList origin);
 void FillType(Type target , Type origin);
-bool IsSameName(char* name);
+bool IsSameName(char* name );
 
 
 
@@ -39,29 +39,31 @@ void CurrentExtDefList(struct tree_node* p);
 
 void CurrentExtDef(struct tree_node* p);	
 
-Type CurrentSpecifier(struct tree_node* p);
-
-char* CurrentTag(struct tree_node* p);
-
-char* CurrentOptTag(struct tree_node* p);
-
 void CurrentExtDecList(Type inh , struct tree_node* p);
+
+Type CurrentSpecifier(struct tree_node* p);
 
 Type CurrentStructSpecifier(struct tree_node* p);
 
-Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure);
+char* CurrentOptTag(struct tree_node* p);
 
-FieldList CurrentDefList(struct tree_node* p , bool InStructure);
+char* CurrentTag(struct tree_node* p);
 
-Type CurrentDef(struct tree_node* p , bool InStructure);
-
-void CurrentDecList(Type inh , struct tree_node* p , bool InStructure);
-
-void CurrentDec(Type inh , struct tree_node* p , bool InStructure);
+Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure , char* );
 
 void CurrentFunDec(Type inh , struct tree_node* p);
 
 FieldList CurrentVarList(struct tree_node* p , int* para_amount);
 
 Type CurrentParamDec(struct  tree_node* p);
+
+Type CurrentDef(struct tree_node* p , bool InStructure , char*);
+
+FieldList CurrentDefList(struct tree_node* p , bool InStructure);
+
+void CurrentDecList(Type inh , struct tree_node* p , bool InStructure , char* );
+
+void CurrentDec(Type inh , struct tree_node* p , bool InStructure , char* );
+
+
 #endif

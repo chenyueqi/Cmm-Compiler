@@ -10,7 +10,7 @@ void WriteIdTable(Type inh , char* name)
 			break;	
 	}
 
-	/* to make sure that the array is not full Do something*/
+	/* to make sure that the array is not full TODO*/
 
 	IdTable[i].valid = 1;
 	
@@ -18,7 +18,9 @@ void WriteIdTable(Type inh , char* name)
 	IdTable[i].Id_name = (char*)malloc(sizeof(char) * (length + 1));
 	strcpy(IdTable[i].Id_name , name);
 
-	FillType(IdTable[i].type , inh);
+	IdTable[i].type = inh;
+
+//	FillType(IdTable[i].type , inh);
 }
 
 

@@ -1,11 +1,20 @@
 int i ;
 int a ;
 int b ;
-struct b
+struct my
 {
 	int a = 0;
 	int b;
-	int b;
+	int tt;
+	int tt;
 };
 
 struct a k;
+int a(struct my b)
+{
+
+}
+int a()
+{
+
+}

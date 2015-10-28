@@ -56,6 +56,15 @@ bool IsHomoType(Type target , Type origin)
 
 }
 
+bool IsSameInStruct(FieldList origin , char* name)
+{
+	if(origin == NULL)
+		return FALSE;
+	if(!strcmp(origin->name , name))
+		return TRUE;
+	return IsSameInStruct(origin->next , name);
+}
+
 void WriteStructTable(FieldList p , char* name)
 {
 	int i = 0;
@@ -67,7 +76,6 @@ void WriteStructTable(FieldList p , char* name)
 
 	/*TODO*/
 	/* to make sure that the array is not full DO something*/
-
 	StructTable[i].valid = 1;
 
 	if(name == NULL)
@@ -79,7 +87,6 @@ void WriteStructTable(FieldList p , char* name)
 		strcpy(StructTable[i].Struct_name , name);
 	}
 
-//	FillFieldList(StructTable[i].entry , p);
 	StructTable[i].entry = p;
 }
 
