@@ -24,10 +24,13 @@ CharactInfoEntry_Id	IdTable.h	/^struct CharactInfoEntry_Id$/;"	s
 CharactInfoEntry_Struct	StructTable.h	/^struct CharactInfoEntry_Struct$/;"	s
 CheckStructTable	StructTable.c	/^bool CheckStructTable(struct CharactInfoEntry_Struct* p)$/;"	f
 CompSt	syntax.y	/^CompSt : LC DefList StmtList RC {$$ = creat_node(4 , "CompSt" , &@$ ,  $1 , $2 , $3 , $4);}$/;"	l
-CurrentDec	Seman.c	/^void CurrentDec(Type inh , struct tree_node* p , bool InStructure)$/;"	f
-CurrentDecList	Seman.c	/^void CurrentDecList(Type inh , struct tree_node* p , bool InStructure)$/;"	f
-CurrentDef	Seman.c	/^Type CurrentDef( struct tree_node* p , bool InStructure)$/;"	f
-CurrentDefList	Seman.c	/^FieldList CurrentDefList(struct tree_node* p , bool InStructure)$/;"	f
+CurrentCompSt	Seman.c	/^bool CurrentCompSt(Type type , struct tree_node* p)\/\/CompSt -> LC DefList StmtList Rc$/;"	f
+CurrentDec	Seman.c	/^FieldList CurrentDec(Type type , struct tree_node* p) $/;"	f
+CurrentDecList	Seman.c	/^FieldList CurrentDecList(Type type , struct tree_node* p)$/;"	f
+CurrentDef	Seman.c	/^FieldList CurrentDef(struct tree_node* p)$/;"	f
+CurrentDefList	Seman.c	/^FieldList CurrentDefList(struct tree_node* p)$/;"	f
+CurrentDefList_1	Seman.c	/^void CurrentDefList_1(Type return_type , struct tree_node* p)$/;"	f
+CurrentExp	Seman.c	/^bool CurrentExp(Type type , struct tree_node* p)$/;"	f
 CurrentExtDecList	Seman.c	/^void CurrentExtDecList(Type inh , struct tree_node* p)$/;"	f
 CurrentExtDef	Seman.c	/^void CurrentExtDef(struct tree_node* p)$/;"	f
 CurrentExtDefList	Seman.c	/^void CurrentExtDefList(struct tree_node* p)$/;"	f
@@ -36,9 +39,11 @@ CurrentOptTag	Seman.c	/^char* CurrentOptTag(struct tree_node* p)$/;"	f
 CurrentParamDec	Seman.c	/^Type CurrentParamDec(struct tree_node* p)$/;"	f
 CurrentProgram	Seman.c	/^void CurrentProgram(struct tree_node* p)$/;"	f
 CurrentSpecifier	Seman.c	/^Type CurrentSpecifier(struct tree_node* p)$/;"	f
+CurrentStmt	Seman.c	/^bool CurrentStmt(Type type , struct tree_node* p)$/;"	f
+CurrentStmtList	Seman.c	/^bool CurrentStmtList(Type type , struct tree_node* p)$/;"	f
 CurrentStructSpecifier	Seman.c	/^Type CurrentStructSpecifier(struct tree_node* p)$/;"	f
 CurrentTag	Seman.c	/^char* CurrentTag(struct tree_node* p)$/;"	f
-CurrentVarDec	Seman.c	/^Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure)$/;"	f
+CurrentVarDec	Seman.c	/^FieldList CurrentVarDec(Type inh , struct tree_node* p)$/;"	f
 CurrentVarList	Seman.c	/^FieldList CurrentVarList(struct tree_node* p , int* para_amount)$/;"	f
 DIV	syntax.tab.c	/^    DIV = 268,$/;"	e	enum:yytokentype	file:
 DIV	syntax.tab.h	/^    DIV = 268,$/;"	e	enum:yytokentype
@@ -69,7 +74,6 @@ FLOAT	syntax.tab.c	/^    FLOAT = 259,$/;"	e	enum:yytokentype	file:
 FLOAT	syntax.tab.h	/^    FLOAT = 259,$/;"	e	enum:yytokentype
 FieldList	Seman.h	/^typedef struct FieldList_* FieldList;$/;"	t	typeref:struct:FieldList_
 FieldList_	Seman.h	/^struct FieldList_$/;"	s
-FillType	Seman.c	/^void FillType(Type target , Type origin)$/;"	f
 FindStruct	StructTable.c	/^FieldList FindStruct(char* name)$/;"	f
 FunDec	syntax.y	/^FunDec : ID LP VarList RP {$$ = creat_node(4 , "FunDec" , &@$ ,  $1 , $2 , $3 , $4);}$/;"	l
 FuncTable	FuncTable.h	/^struct CharactInfoEntry_Func FuncTable[10];$/;"	v	typeref:struct:CharactInfoEntry_Func
@@ -90,7 +94,10 @@ IdTable	IdTable.h	/^struct CharactInfoEntry_Id IdTable[10];$/;"	v	typeref:struct
 Id_name	IdTable.h	/^	char* Id_name;$/;"	m	struct:CharactInfoEntry_Id
 IsHomoStruct	StructTable.c	/^bool IsHomoStruct(FieldList target , FieldList origin)$/;"	f
 IsHomoType	StructTable.c	/^bool IsHomoType(Type target , Type origin)$/;"	f
+IsSameFuncName	FuncTable.c	/^bool IsSameFuncName(char* name)$/;"	f
+IsSameInStruct	StructTable.c	/^bool IsSameInStruct(FieldList origin , char* name)$/;"	f
 IsSameName	Seman.c	/^bool IsSameName(char* name)$/;"	f
+IsSameNameInStructure	Seman.c	/^void IsSameNameInStructure(FieldList field)$/;"	f
 LB	syntax.tab.c	/^    LB = 276,$/;"	e	enum:yytokentype	file:
 LB	syntax.tab.h	/^    LB = 276,$/;"	e	enum:yytokentype
 LC	syntax.tab.c	/^    LC = 278,$/;"	e	enum:yytokentype	file:
@@ -155,6 +162,7 @@ VarDec	syntax.y	/^VarDec : ID {$$ = creat_node(1 , "VarDec" , &@$ ,  $1);}$/;"	l
 VarList	syntax.y	/^VarList : ParamDec COMMA VarList {$$ = creat_node(3 , "VarList" , &@$ ,  $1 , $2 , $3);}$/;"	l
 WHILE	syntax.tab.c	/^    WHILE = 284,$/;"	e	enum:yytokentype	file:
 WHILE	syntax.tab.h	/^    WHILE = 284,$/;"	e	enum:yytokentype
+WriteFuncTable	FuncTable.c	/^void WriteFuncTable(char* name , Type return_type , int para_amount , FieldList parameter)$/;"	f
 WriteIdTable	IdTable.c	/^void WriteIdTable(Type inh , char* name)$/;"	f
 WriteStructTable	StructTable.c	/^void WriteStructTable(FieldList p , char* name)$/;"	f
 YFC	Makefile	/^YFC = $(shell find .\/ -name "*.y" | sed s\/[^\/]*\\\\.y\/syntax.tab.c\/)$/;"	m
@@ -317,6 +325,7 @@ YY_YY_SYNTAX_TAB_H_INCLUDED	syntax.tab.h	34;"	d
 _Noreturn	syntax.tab.c	256;"	d	file:
 _Noreturn	syntax.tab.c	258;"	d	file:
 __COMMON__	common.h	6;"	d
+__FUNC__	FuncTable.h	4;"	d
 __ID__	IdTable.h	4;"	d
 __SEMAN__	Seman.h	2;"	d
 __STDC_LIMIT_MACROS	lex.yy.c	40;"	d	file:
@@ -359,7 +368,7 @@ last_column	syntax.tab.c	/^  int last_column;$/;"	m	struct:YYLTYPE	file:
 last_column	syntax.tab.h	/^  int last_column;$/;"	m	struct:YYLTYPE
 last_line	syntax.tab.c	/^  int last_line;$/;"	m	struct:YYLTYPE	file:
 last_line	syntax.tab.h	/^  int last_line;$/;"	m	struct:YYLTYPE
-lineNumber	StructTable.h	/^	int lineNumber;$/;"	m	struct:CharactInfoEntry_Struct
+lineno	Seman.h	/^	int lineno;$/;"	m	struct:FieldList_
 lineno	common.h	/^	int lineno;$/;"	m	struct:tree_node
 lineno	lex.yy.c	/^		int lineno;$/;"	m	struct:tree_node	file:
 main	main.c	/^int main(int argc , char** argv)$/;"	f

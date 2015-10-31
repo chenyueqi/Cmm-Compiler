@@ -7,14 +7,17 @@ struct my
 	int b;
 	int tt;
 	int tt;
+	struct my_1
+	{
+		int aa;
+		int aa;
+	} xx;
 };
 
 struct a k;
-int a(struct my b)
-{
+struct my m;
 
-}
-int a()
+int myfunc(int a)
 {
 
 }

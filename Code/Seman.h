@@ -23,6 +23,7 @@ struct FieldList_
 {
 	char* name;
 	Type type;
+	int lineno;
 	FieldList next;
 };
 
@@ -30,6 +31,8 @@ struct FieldList_
 //void FillFieldList(FieldList target , FieldList origin);
 void FillType(Type target , Type origin);
 bool IsSameName(char* name );
+void IsSameNameInStructure(FieldList field);
+bool IsSameType(Type target , Type origin);
 
 
 
@@ -49,7 +52,7 @@ char* CurrentOptTag(struct tree_node* p);
 
 char* CurrentTag(struct tree_node* p);
 
-Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure , char* );
+FieldList CurrentVarDec(Type type , struct tree_node* p);
 
 void CurrentFunDec(Type inh , struct tree_node* p);
 
@@ -57,13 +60,27 @@ FieldList CurrentVarList(struct tree_node* p , int* para_amount);
 
 Type CurrentParamDec(struct  tree_node* p);
 
-Type CurrentDef(struct tree_node* p , bool InStructure , char*);
+FieldList CurrentDef(struct tree_node* p);
 
-FieldList CurrentDefList(struct tree_node* p , bool InStructure);
+FieldList  CurrentDefList(struct tree_node* p);
 
-void CurrentDecList(Type inh , struct tree_node* p , bool InStructure , char* );
+FieldList CurrentDecList(Type type , struct tree_node* p);
 
-void CurrentDec(Type inh , struct tree_node* p , bool InStructure , char* );
+FieldList CurrentDec(Type type , struct tree_node* p);
 
+void CurrentCompSt(Type type , struct tree_node* p , bool* return_right);
 
+void CurrentStmtList(Type type , struct tree_node* p , bool* return_right);
+
+void CurrentStmt(Type type , struct tree_node* p , bool* return_right);
+
+void CurrentExp(Type type , struct tree_node* p , bool* return_right);
+
+void CurrentDefList_1(Type type , struct tree_node* p , bool* return_right);
+
+void CurrentDef_1(Type type , struct tree_node* p , bool* return_right);
+
+void CurrentDecList_1(Type return_type , Type , struct tree_node* p , bool* return_right);
+
+void CurrentDec_1(Type return_type , Type type , struct tree_node* p , bool* return_right);
 #endif

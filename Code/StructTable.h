@@ -5,7 +5,6 @@
 struct CharactInfoEntry_Struct
 {
 	int valid;
-	int lineNumber;
 	char* Struct_name;
 	FieldList entry;
 };

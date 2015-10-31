@@ -8,7 +8,6 @@
 void Seman_analysis(struct tree_node* p)
 {
 	CurrentProgram(p);
-	//display_tree(p , 0);
 }
 
 bool IsSameName(char* name)
@@ -34,6 +33,11 @@ bool IsSameName(char* name)
 	return FALSE;
 }
 
+bool IsSameType(Type target , Type origin)
+{
+
+}
+
 void CurrentProgram(struct tree_node* p)
 {
 	return CurrentExtDefList(p->children[0]);//Program -> ExtDefList
@@ -55,7 +59,6 @@ void CurrentExtDef(struct tree_node* p)
 	Type inh = CurrentSpecifier(p->children[0]);
 	if(inh == NULL)
 		return ;
-
 	if(p->children_num == 3)
 	{
 
@@ -65,12 +68,12 @@ void CurrentExtDef(struct tree_node* p)
 			CurrentFunDec(inh , p->children[1]);
 			/* TODO */
 	}
-	else if(p->children_num == 2){}//ExDef -> Specifier SEMI
+//	else if(p->children_num == 2){}//ExDef -> Specifier SEMI
 }
 
 void CurrentExtDecList(Type inh , struct tree_node* p)
 {
-	CurrentVarDec(inh , p->children[0] , FALSE , NULL);// CurrentExtDecList -> VarDec
+	CurrentVarDec(inh , p->children[0]);// CurrentExtDecList -> VarDec
 
 	if(p->children_num == 3)// CurrentExtDecList -> VarDec COMMA ExtDecList
 		CurrentExtDecList(inh , p->children[2]);
@@ -97,6 +100,34 @@ Type CurrentSpecifier(struct tree_node* p)
 }
 
 
+void IsSameNameInStructure(FieldList field)
+{
+	FieldList current = field;
+	while(current != NULL)
+	{
+		FieldList tail = current->next;
+		FieldList pre = tail;
+		while(tail != NULL)
+		{
+			if(!strcmp(current->name , tail->name))
+			{
+				fprintf(stderr , "Error type 15 at Line %d : Redefined  name '%s' in same structure\n" , tail->lineno , tail->name);
+				pre->next = tail->next; 
+				free(tail->name);
+				free(tail);
+				tail = pre->next;
+			}
+			else
+			{
+				current = tail;
+				tail = tail->next;
+			}
+		}
+		current = current->next;
+	}
+}
+
+
 Type CurrentStructSpecifier(struct tree_node* p)
 {
 	Type target = (Type)malloc(sizeof(struct Type_));
@@ -112,7 +143,8 @@ Type CurrentStructSpecifier(struct tree_node* p)
 		}
 		else
 		{
-			target->u.structure = CurrentDefList(p->children[3] , TRUE);
+			target->u.structure = CurrentDefList(p->children[3]);
+			IsSameNameInStructure(target->u.structure);
 			WriteStructTable(target->u.structure , name);
 		}
 	}
@@ -143,7 +175,7 @@ char* CurrentTag(struct tree_node* p)
 	return p->children[0]->unit_name;//Tag -> ID
 }
 
-Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure , char *name)
+FieldList CurrentVarDec(Type inh , struct tree_node* p)
 {
 	if(p->children_num == 1)//VarDec -> ID
 	{
@@ -154,15 +186,14 @@ Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure , char *nam
 		}
 		else
 		{
-			if(InStructure)
-			{
-				int length = strlen(p->children[0]->unit_name);
-				name = (char*)malloc(sizeof(char) * (length + 1));
-				strcpy(name , p->children[0]->unit_name);;
-				printf("%s %s %d\n" , name , __FILE__ , __LINE__);
-			}
+			FieldList field = (FieldList)malloc(sizeof(struct FieldList_));
+			int length = strlen(p->children[0]->unit_name);
+			field->name = (char*)malloc(sizeof(char) * (length + 1));
+			strcpy(field->name , p->children[0]->unit_name);
+			field->type = inh;
+			field->lineno = p->lineno;
 			WriteIdTable(inh , p->children[0]->unit_name);
-			return inh;
+			return field;
 		}
 	}
 	else if(p->children_num == 4)//VarDec -> VarDec LB INT RB
@@ -171,9 +202,10 @@ Type CurrentVarDec(Type inh , struct tree_node* p , bool InStructure , char *nam
 		target->kind = ARRAY;
 		target->u.array.elem = inh;
 		target->u.array.size = atoi(p->children[2]->unit_name);
-		return CurrentVarDec(target , p->children[0] , InStructure , name);
+		return CurrentVarDec(target , p->children[0]);
 	}
-	return NULL;
+	else
+		return NULL;
 }
 
 void CurrentFunDec(Type inh , struct tree_node* p)
@@ -190,7 +222,10 @@ void CurrentFunDec(Type inh , struct tree_node* p)
 			Type return_type = inh;
 			int para_amount = 0;
 			FieldList parameter = CurrentVarList(p->children[2] , &para_amount);
-			WriteFuncTable(name , return_type , para_amount , parameter);
+			bool return_right = FALSE;
+			CurrentCompSt(inh , p->children[3] , &return_right);
+			if(return_right)
+				WriteFuncTable(name , return_type , para_amount , parameter);
 		}
 	}
 	else if(p->children_num == 3)//FunDec -> ID LP RP
@@ -204,9 +239,11 @@ void CurrentFunDec(Type inh , struct tree_node* p)
 		{
 			Type return_type = inh;
 			int para_amount = 0;
-			WriteFuncTable(name , return_type , para_amount , NULL);
+			bool return_right = FALSE;
+			CurrentCompSt(inh , p->children[3] , &return_right);
+			if(return_right)
+				WriteFuncTable(name , return_type , para_amount , NULL);
 		}
-		/*TODO*/
 	}
 }
 
@@ -237,70 +274,151 @@ FieldList CurrentVarList(struct tree_node* p , int* para_amount)
 
 Type CurrentParamDec(struct tree_node* p)
 {
-	Type inh =  CurrentSpecifier(p->children[0]);
-	Type target = CurrentVarDec(inh , p->children[1] , FALSE , NULL);//ParamDec -> Specifier VarDec
-	return target;
+	Type type = CurrentSpecifier(p->children[0]);
+	CurrentVarDec(type , p->children[1]);
+	return type;
 }
 
-
-
-
-FieldList CurrentDefList(struct tree_node* p , bool InStructure)
+FieldList CurrentDefList(struct tree_node* p)
 {
 	if(p == NULL)//DefList -> e
-		return NULL;
+		return  NULL;
 	else//DefList -> Def DefList
 	{
-		FieldList target = (FieldList)malloc(sizeof(struct FieldList_)) ; 
-
-		Type type = CurrentDef(p->children[0] , InStructure , target->name);
-		printf("%s %s %d\n" , target->name , __FILE__ , __LINE__);
-		if(type == NULL)
-			target = CurrentDefList(p->children[1] , InStructure);
+		FieldList field = CurrentDef(p->children[0]);
+		if(field == NULL)
+			field  = CurrentDefList(p->children[1]);
 		else
 		{
-			target->type = type;
-			target->next = CurrentDefList(p->children[1] , InStructure);
+			FieldList nextfield = field;
+			while(nextfield->next != NULL)
+				nextfield = nextfield->next;
+			nextfield->next = CurrentDefList(p->children[1]);
 		}
-		return target;
+		return field;
 	}
 }
 
-Type CurrentDef( struct tree_node* p , bool InStructure ,  char* name)
+FieldList CurrentDef(struct tree_node* p)
 {
-	Type target = CurrentSpecifier(p->children[0]);
-	if(target == NULL)
+	Type type = CurrentSpecifier(p->children[0]);
+	if(type == NULL)
 		return NULL;
-	Type inh = target;
-	CurrentDecList(inh , p->children[1] , InStructure  , name);//Def -> Specifier DecList SEMI
-	return target;
+	return CurrentDecList(type , p->children[1]);//Def -> Specifier DecList SEMI
 }
 
-void CurrentDecList(Type inh , struct tree_node* p , bool InStructure  , char* name)
+FieldList CurrentDecList(Type type , struct tree_node* p)
 {
-	CurrentDec(inh , p->children[0] , InStructure  , name);//DecList -> Dec
+	FieldList field = CurrentDec(type  ,  p->children[0]);//DecList -> Dec
 	
 	if(p->children_num == 3)//DecList -> Dec COMMA DecList
-		CurrentDecList(inh , p->children[2] , InStructure  , name);
+	{
+		if(field != NULL)
+			field->next = CurrentDecList(type , p->children[2]);
+		else
+			field = CurrentDecList(type , p->children[2]);
+	}
+	return field;
 }
 
-void CurrentDec(Type inh , struct tree_node* p , bool InStructure , char* name) 
+FieldList CurrentDec(Type type , struct tree_node* p) 
 {
 	if(p->children_num == 1)//Dec -> VarDec
 	{
-		CurrentVarDec(inh , p->children[0] , InStructure  , name);
+		return CurrentVarDec(type , p->children[0]);
 	}
 	else if(p->children_num == 3)//Dec -> VarDec ASSIGNOP Exp
 	{
-		if(InStructure)
-			fprintf(stderr , "Error type 15 at Line %d : Try to assign in struct definition\n" , p->lineno);
-		else
-		{
-		/*TODO*/
-		}
+		fprintf(stderr , "Error type 15 at Line %d : Try to assign in struct definition\n" , p->lineno);
+		return NULL;
 	}
+	else
+		return NULL;
+}
+
+void CurrentCompSt(Type type , struct tree_node* p , bool* return_right)//CompSt -> LC DefList StmtList Rc
+{
+	CurrentDefList_1(type , p->children[1] , return_right);//may be something wrong
+	CurrentStmtList(type , p->children[2] , return_right);
+}
+
+void CurrentStmtList(Type type , struct tree_node* p , bool* return_right)
+{
+	if(p == NULL)
+		return;
+	CurrentStmt(type , p->children[0] , return_right);
+	CurrentStmtList(type , p->children[1] , return_right);
+}
+
+void CurrentStmt(Type type , struct tree_node* p , bool* return_right)
+{
+	if(p->children_num == 2)//Stmt -> Exp SEMI
+		return CurrentExp(type , p->children[0] , return_right);
+	else if(p->children_num == 1)//Stmt -> CompSt
+		return CurrentCompSt(type , p->children[0] , return_right);
+	else if(p->children_num == 3)//Stmt -> RETURN Exp SEMI
+		return CurrentExp(type , p->children[1] , return_right);
+	else if(p->children_num == 5)//Stmt->IF LP Exp RP Stmt
+	{
+		CurrentExp(type , p->children[1] , return_right);
+		CurrentStmt(type , p->children[4] , return_right);
+	}
+	else if(p->children_num == 7)//Stmt->IF LP Exp RP Stmt ELSE Stmt
+	{
+		CurrentExp(type , p->children[1] , return_right);
+		CurrentStmt(type , p->children[4] , return_right);
+		CurrentStmt(type , p->children[6] , return_right);
+	}
+	else if(p->children_num == 5)//Stmt->WHILE LP Exp Rp Stmt
+	{
+		CurrentExp(type , p->children[1] , return_right);
+		CurrentStmt(type , p->children[4] , return_right);
+	}
+	return ;
 }
 
 
+void CurrentDefList_1(Type return_type , struct tree_node* p , bool* return_right)
+{
+	if(p == NULL)
+		return;
+	CurrentDef_1(return_type , p->children[0] , return_right);
+	CurrentDefList_1(return_type , p->children[1] , return_right);
+}
 
+void CurrentDef_1(Type return_type , struct tree_node* p , bool* return_right)
+{
+	Type inh = CurrentSpecifier(p->children[0]);
+	if(inh == NULL)
+		return;
+	CurrentDecList_1(return_type , inh , p->children[1] , return_right);//Def -> Specifier DecList SEMI
+}
 
+void CurrentDecList_1(Type return_type ,Type type , struct tree_node* p , bool* return_right)
+{
+	if(p->children_num == 1)//DecList -> Dec
+		CurrentDec_1(return_type , type , p->children[0] , return_right);
+	else if(p->children_num == 3)//DecList -> Dec COMMA DecList
+	{
+		CurrentDec_1(return_type , type , p->children[0] , return_right);
+		CurrentDecList_1(return_type , type ,p->children[2] , return_right);
+	}
+	else
+		return;
+}
+
+void CurrentDec_1(Type return_type , Type type , struct tree_node* p, bool* return_right)
+{
+	FieldList field = CurrentVarDec(type , p->children[0]);//Dec -> VarDec/Dec -> VarDec ASSIGNOP Exp
+	if(field == NULL)
+		return;
+	while(field->next != NULL)
+		field = field->next;
+	if(IsSameType(return_type , field->type))
+		*return_right = TRUE;
+}
+
+void CurrentExp(Type type , struct tree_node* p , bool* return_right)
+{
+
+}

@@ -19,8 +19,6 @@ void WriteIdTable(Type inh , char* name)
 	strcpy(IdTable[i].Id_name , name);
 
 	IdTable[i].type = inh;
-
-//	FillType(IdTable[i].type , inh);
 }
 
 
