@@ -1,5 +1,5 @@
 int i ;
-int a ;
+float a ;
 int b ;
 struct my
 {
@@ -15,9 +15,11 @@ struct my
 };
 
 struct a k;
-struct my m;
+struct my m1;
 
-int myfunc(int a)
+int my_func(int a)
 {
-
+	int xxx;
+	return xx;
 }
+

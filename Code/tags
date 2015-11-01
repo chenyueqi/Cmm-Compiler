@@ -24,13 +24,16 @@ CharactInfoEntry_Id	IdTable.h	/^struct CharactInfoEntry_Id$/;"	s
 CharactInfoEntry_Struct	StructTable.h	/^struct CharactInfoEntry_Struct$/;"	s
 CheckStructTable	StructTable.c	/^bool CheckStructTable(struct CharactInfoEntry_Struct* p)$/;"	f
 CompSt	syntax.y	/^CompSt : LC DefList StmtList RC {$$ = creat_node(4 , "CompSt" , &@$ ,  $1 , $2 , $3 , $4);}$/;"	l
-CurrentCompSt	Seman.c	/^bool CurrentCompSt(Type type , struct tree_node* p)\/\/CompSt -> LC DefList StmtList Rc$/;"	f
+CurrentCompSt	Seman.c	/^void CurrentCompSt(Type type , struct tree_node* p , bool* return_right)\/\/CompSt -> LC DefList StmtList Rc$/;"	f
 CurrentDec	Seman.c	/^FieldList CurrentDec(Type type , struct tree_node* p) $/;"	f
 CurrentDecList	Seman.c	/^FieldList CurrentDecList(Type type , struct tree_node* p)$/;"	f
+CurrentDecList_1	Seman.c	/^void CurrentDecList_1(Type type , struct tree_node* p)$/;"	f
+CurrentDec_1	Seman.c	/^void CurrentDec_1(Type type , struct tree_node* p)$/;"	f
 CurrentDef	Seman.c	/^FieldList CurrentDef(struct tree_node* p)$/;"	f
 CurrentDefList	Seman.c	/^FieldList CurrentDefList(struct tree_node* p)$/;"	f
-CurrentDefList_1	Seman.c	/^void CurrentDefList_1(Type return_type , struct tree_node* p)$/;"	f
-CurrentExp	Seman.c	/^bool CurrentExp(Type type , struct tree_node* p)$/;"	f
+CurrentDefList_1	Seman.c	/^void CurrentDefList_1(struct tree_node* p)$/;"	f
+CurrentDef_1	Seman.c	/^void CurrentDef_1(struct tree_node* p)$/;"	f
+CurrentExp	Seman.c	/^Type CurrentExp(struct tree_node* p)$/;"	f
 CurrentExtDecList	Seman.c	/^void CurrentExtDecList(Type inh , struct tree_node* p)$/;"	f
 CurrentExtDef	Seman.c	/^void CurrentExtDef(struct tree_node* p)$/;"	f
 CurrentExtDefList	Seman.c	/^void CurrentExtDefList(struct tree_node* p)$/;"	f
@@ -38,12 +41,14 @@ CurrentFunDec	Seman.c	/^void CurrentFunDec(Type inh , struct tree_node* p)$/;"	f
 CurrentOptTag	Seman.c	/^char* CurrentOptTag(struct tree_node* p)$/;"	f
 CurrentParamDec	Seman.c	/^Type CurrentParamDec(struct tree_node* p)$/;"	f
 CurrentProgram	Seman.c	/^void CurrentProgram(struct tree_node* p)$/;"	f
+CurrentReturnExp	Seman.c	/^void CurrentReturnExp(Type return_type , struct tree_node* p , bool* return_right)$/;"	f
 CurrentSpecifier	Seman.c	/^Type CurrentSpecifier(struct tree_node* p)$/;"	f
-CurrentStmt	Seman.c	/^bool CurrentStmt(Type type , struct tree_node* p)$/;"	f
-CurrentStmtList	Seman.c	/^bool CurrentStmtList(Type type , struct tree_node* p)$/;"	f
+CurrentStmt	Seman.c	/^void CurrentStmt(Type type , struct tree_node* p , bool* return_right)$/;"	f
+CurrentStmtList	Seman.c	/^void CurrentStmtList(Type type , struct tree_node* p , bool* return_right)$/;"	f
 CurrentStructSpecifier	Seman.c	/^Type CurrentStructSpecifier(struct tree_node* p)$/;"	f
 CurrentTag	Seman.c	/^char* CurrentTag(struct tree_node* p)$/;"	f
 CurrentVarDec	Seman.c	/^FieldList CurrentVarDec(Type inh , struct tree_node* p)$/;"	f
+CurrentVarDec_1	Seman.c	/^FieldList CurrentVarDec_1(Type inh , struct tree_node* p)$/;"	f
 CurrentVarList	Seman.c	/^FieldList CurrentVarList(struct tree_node* p , int* para_amount)$/;"	f
 DIV	syntax.tab.c	/^    DIV = 268,$/;"	e	enum:yytokentype	file:
 DIV	syntax.tab.h	/^    DIV = 268,$/;"	e	enum:yytokentype
@@ -90,14 +95,17 @@ INT32_MAX	lex.yy.c	75;"	d	file:
 INT32_MIN	lex.yy.c	66;"	d	file:
 INT8_MAX	lex.yy.c	69;"	d	file:
 INT8_MIN	lex.yy.c	60;"	d	file:
-IdTable	IdTable.h	/^struct CharactInfoEntry_Id IdTable[10];$/;"	v	typeref:struct:CharactInfoEntry_Id
+IdTable	IdTable.h	/^struct CharactInfoEntry_Id IdTable[100];$/;"	v	typeref:struct:CharactInfoEntry_Id
 Id_name	IdTable.h	/^	char* Id_name;$/;"	m	struct:CharactInfoEntry_Id
 IsHomoStruct	StructTable.c	/^bool IsHomoStruct(FieldList target , FieldList origin)$/;"	f
 IsHomoType	StructTable.c	/^bool IsHomoType(Type target , Type origin)$/;"	f
+IsLeft	Seman.c	/^bool IsLeft(struct tree_node* p)$/;"	f
 IsSameFuncName	FuncTable.c	/^bool IsSameFuncName(char* name)$/;"	f
 IsSameInStruct	StructTable.c	/^bool IsSameInStruct(FieldList origin , char* name)$/;"	f
 IsSameName	Seman.c	/^bool IsSameName(char* name)$/;"	f
 IsSameNameInStructure	Seman.c	/^void IsSameNameInStructure(FieldList field)$/;"	f
+IsSameStructure	Seman.c	/^bool IsSameStructure(FieldList target , FieldList origin)$/;"	f
+IsSameType	Seman.c	/^bool IsSameType(Type target , Type origin)$/;"	f
 LB	syntax.tab.c	/^    LB = 276,$/;"	e	enum:yytokentype	file:
 LB	syntax.tab.h	/^    LB = 276,$/;"	e	enum:yytokentype
 LC	syntax.tab.c	/^    LC = 278,$/;"	e	enum:yytokentype	file:

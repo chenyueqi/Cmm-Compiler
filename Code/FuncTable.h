@@ -18,4 +18,6 @@ void WriteFuncTable(char* name , Type return_type , int para_amount , FieldList 
 
 bool IsSameFuncName(char* name);
 
+int FindFunc(char* name);
+
 #endif

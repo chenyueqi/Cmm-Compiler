@@ -33,6 +33,7 @@ void FillType(Type target , Type origin);
 bool IsSameName(char* name );
 void IsSameNameInStructure(FieldList field);
 bool IsSameType(Type target , Type origin);
+bool IsSameStructure(FieldList target , FieldList origin);
 
 
 
@@ -74,13 +75,19 @@ void CurrentStmtList(Type type , struct tree_node* p , bool* return_right);
 
 void CurrentStmt(Type type , struct tree_node* p , bool* return_right);
 
-void CurrentExp(Type type , struct tree_node* p , bool* return_right);
+void CurrentDefList_1(struct tree_node* p);
 
-void CurrentDefList_1(Type type , struct tree_node* p , bool* return_right);
+void CurrentDef_1(struct tree_node* p);
 
-void CurrentDef_1(Type type , struct tree_node* p , bool* return_right);
+void CurrentDecList_1(Type type, struct tree_node* p);
 
-void CurrentDecList_1(Type return_type , Type , struct tree_node* p , bool* return_right);
+void CurrentDec_1(Type type , struct tree_node* p);
 
-void CurrentDec_1(Type return_type , Type type , struct tree_node* p , bool* return_right);
+FieldList CurrentVarDec_1(Type type , struct tree_node* p);
+
+void CurrentReturnExp(Type return_type , struct tree_node* p , bool* return_right);
+
+Type CurrentExp(struct tree_node* p);
+
+bool IsLeft(struct tree_node*p);
 #endif

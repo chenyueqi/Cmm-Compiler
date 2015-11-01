@@ -4,7 +4,7 @@
 void WriteIdTable(Type inh , char* name)
 {
 	int i = 0;
-	for(; i < 10 ; i++)
+	for(; i < 100 ; i++)
 	{
 		if(IdTable[i].valid == 0)
 			break;	
@@ -21,4 +21,18 @@ void WriteIdTable(Type inh , char* name)
 	IdTable[i].type = inh;
 }
 
-
+Type FindId(char* name)
+{
+	int i = 0;
+	for(; i < 100; i++)
+	{
+		if(IdTable[i].valid == 1)
+		{
+			if(!strcmp(IdTable[i].Id_name , name))
+				return IdTable[i].type;
+			else
+				continue;
+		}
+	}
+	return NULL;
+}

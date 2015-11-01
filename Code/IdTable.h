@@ -9,10 +9,12 @@ struct CharactInfoEntry_Id
 	Type type;
 };
 
-struct CharactInfoEntry_Id IdTable[10];
+struct CharactInfoEntry_Id IdTable[100];
 
 bool CheckIdTable_name(char* name);
 
 void WriteIdTable(Type inh , char *name);
+
+Type FindId(char* name);
 
 #endif

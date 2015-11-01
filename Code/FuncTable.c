@@ -33,3 +33,15 @@ bool IsSameFuncName(char* name)
 	}
 	return FALSE;
 }
+
+int FindFunc(char* name)
+{
+	int i = 0;
+	for(; i < 10 ; i++)
+	{
+		if(FuncTable[i].valid == 1)
+			if(!strcmp(FuncTable[i].func_name , name))
+				return i;
+	}
+	return -1;
+}
