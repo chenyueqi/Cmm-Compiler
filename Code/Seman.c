@@ -20,6 +20,7 @@ bool IsSameName(char* name)
 				return TRUE;
 	}
 
+	i = 0;
 	for(; i < 100 ; i++)//check Struct Table
 	{
 		if(StructTable[i].valid == 1)
@@ -28,7 +29,25 @@ bool IsSameName(char* name)
 				continue;
 			if(!strcmp(StructTable[i].Struct_name , name))
 				return TRUE;
+			if(IsSameNameInField(StructTable[i].entry , name))
+				return TRUE;
 		}
+	}
+	return FALSE;
+}
+
+bool IsSameNameInField(FieldList field , char* name)
+{
+	while(field != NULL)
+	{
+		if(field->name == NULL)
+		{
+			field = field->next;
+			continue;
+		}
+		if(!strcmp(field->name , name))
+			return TRUE;
+		field = field->next;
 	}
 	return FALSE;
 }
@@ -117,9 +136,10 @@ void CurrentExtDef(struct tree_node* p)
 			if(!return_right)
 			{
 				fprintf(stderr , "Error type 8 at Line %d : unmatched return type\n" , p->lineno);
+			CurrentFunDec(inh , p->children[1] , FALSE);
 				return;
 			}
-			CurrentFunDec(inh , p->children[1]);
+			CurrentFunDec(inh , p->children[1] , TRUE);
 		}
 	}
 	else if(p->children_num == 2)//ExtDef -> Specifier SEMI
@@ -128,7 +148,7 @@ void CurrentExtDef(struct tree_node* p)
 
 void CurrentExtDecList(Type inh , struct tree_node* p)
 {
-	CurrentVarDec(inh , p->children[0]);// CurrentExtDecList -> VarDec
+	CurrentVarDec_1(inh , p->children[0]);// CurrentExtDecList -> VarDec
 
 	if(p->children_num == 3)// CurrentExtDecList -> VarDec COMMA ExtDecList
 		CurrentExtDecList(inh , p->children[2]);
@@ -160,28 +180,41 @@ Type CurrentSpecifier(struct tree_node* p)
 void IsSameNameInStructure(FieldList field)
 {
 	FieldList current = field;
+#ifdef DEBUG
 	while(current != NULL)
 	{
-		FieldList tail = current->next;
-		FieldList pre = tail;
-		while(tail != NULL)
+		fprintf(stderr , "%s\n" , current->name);
+		current = current->next;
+	}
+	current = field;
+#endif
+	while(current != NULL)
+	{
+		FieldList pre = current;
+		while(pre != NULL)
 		{
+			FieldList tail = pre->next;
+			if(tail == NULL)
+				break;
 			if(!strcmp(current->name , tail->name))
 			{
 				fprintf(stderr , "Error type 15 at Line %d : Redefined  name '%s' in same structure\n" , tail->lineno , tail->name);
 				pre->next = tail->next; 
 				free(tail->name);
 				free(tail);
-				tail = pre->next;
 			}
-			else
-			{
-				current = tail;
-				tail = tail->next;
-			}
+			pre = pre->next;
 		}
 		current = current->next;
 	}
+#ifdef DEBUG
+	while(current != NULL)
+	{
+		fprintf(stderr , "%s\n" , current->name);
+		current = current->next;
+	}
+	current = field;
+#endif
 }
 
 
@@ -264,7 +297,7 @@ FieldList CurrentVarDec(Type inh , struct tree_node* p)
 		return NULL;
 }
 
-void CurrentFunDec(Type inh ,struct tree_node* p)
+void CurrentFunDec(Type inh ,struct tree_node* p , bool Isright)
 {
 	if(p->children_num == 4)//FunDec -> ID LP VarList RP
 	{
@@ -278,7 +311,8 @@ void CurrentFunDec(Type inh ,struct tree_node* p)
 			Type return_type = inh;
 			int para_amount = 0;
 			FieldList parameter = CurrentVarList(p->children[2] , &para_amount);
-			WriteFuncTable(name , return_type , para_amount , parameter);
+			if(Isright)
+				WriteFuncTable(name , return_type , para_amount , parameter);
 		}
 	}
 	else if(p->children_num == 3)//FunDec -> ID LP RP
@@ -324,7 +358,7 @@ FieldList CurrentVarList(struct tree_node* p , int* para_amount)
 
 Type CurrentParamDec(struct tree_node* p)
 {
-	Type type = CurrentSpecifier(p->children[0]);
+	Type type = CurrentSpecifier(p->children[0]);//ParamDec -> Specifier VarDec
 	CurrentVarDec(type , p->children[1]);
 	return type;
 }
@@ -529,6 +563,45 @@ Type CurrentExp(struct tree_node* p)
 {
 	if(p->children_num == 4)
 	{
+		if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP Args RP
+		{
+		 	int rank = FindFunc(p->children[0]->unit_name);
+			if(rank == -1)
+			{
+				fprintf(stderr , "Error type 2 at Line %d : undefined function \n" , p->lineno);
+				Type type = FindId(p->children[0]->unit_name);
+				if(type != NULL)
+					 fprintf(stderr , "Error type 11 at Line %d : use () in variable \n" , p->lineno);
+				return NULL;
+			}
+			else
+			{
+				if(!IsSameStructure(FuncTable[rank].parameter , CurrentArgs(p->children[2])))
+				{
+					 fprintf(stderr , "Error type 9 at Line %d : unmatched parameter \n" , p->lineno);
+					 return NULL;
+				}
+				return FuncTable[rank].return_type;
+			}
+		}
+		else if(!strcmp(p->children[0]->token_name , "Exp"))//Exp -> Exp LB Exp RB
+		{
+			Type type2 = CurrentExp(p->children[2]);
+			if(!(type2->kind == BASIC && type2->u.basic == 0))
+			{
+				fprintf(stderr , "Error type 12 at Line %d : not integer between [ ]  \n" , p->lineno);
+				 return NULL;
+
+			}
+			Type type1 = CurrentExp(p->children[0]);
+			if(type1->kind != ARRAY)
+			{
+				fprintf(stderr , "Error type 10 at Line %d :  use [ ] on non-array \n" , p->lineno);
+				return NULL;
+			}
+
+
+		}
 
 	}
 	if(p->children_num == 3)
@@ -570,7 +643,7 @@ Type CurrentExp(struct tree_node* p)
 			{
 				if(FuncTable[rank].para_amount != 0)
 				{
-					 fprintf(stderr , "Error type 7 at Line %d : unmatched parameter \n" , p->lineno);
+					 fprintf(stderr , "Error type 9 at Line %d : unmatched parameter \n" , p->lineno);
 					 return NULL;
 				}
 				return FuncTable[rank].return_type;
@@ -578,7 +651,18 @@ Type CurrentExp(struct tree_node* p)
 		}
 		if(!strcmp(p->children[1]->token_name , "DOT"))//Exp -> Exp DOT ID
 		{
-
+			Type type = CurrentExp(p->children[0]);
+			if(type->kind != STRUCT)
+			{
+				 fprintf(stderr , "Error type 13 at Line %d : use '.' in non-structure \n" , p->lineno);
+				 return NULL;
+			}
+			if(!IsSameNameInField(type->u.structure , p->children[2]->unit_name))
+			{
+				 fprintf(stderr , "Error type 14 at Line %d : use not defined field in structure \n" , p->lineno);
+				 return NULL;
+			}
+			return CurrentExp(p->children[2]);
 		}
 	}
 	else if(p->children_num == 2)
@@ -610,6 +694,35 @@ Type CurrentExp(struct tree_node* p)
 			return NULL;
 	}
 		return NULL;
+}
+
+FieldList CurrentArgs(struct tree_node* p)//Args-> Exp COMMA Args
+{
+	Type type = CurrentExp(p->children[0]);
+	if(p->children_num == 3)
+	{
+		if(type == NULL)
+			return CurrentArgs(p->children[2]);
+		else
+		{
+			FieldList field = (FieldList)malloc(sizeof(struct FieldList_));
+			field->type = type;
+			field->next = CurrentArgs(p->children[2]);
+			return field;
+		}
+	}
+	else
+	{
+		if(type == NULL)
+			return NULL;
+		else
+		{
+			FieldList field = (FieldList)malloc(sizeof(struct FieldList_));
+			field->type = type;
+			return field;
+		}
+	}
+
 }
 
 bool IsLeft(struct tree_node* p)

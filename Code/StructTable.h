@@ -9,7 +9,7 @@ struct CharactInfoEntry_Struct
 	FieldList entry;
 };
 
-struct CharactInfoEntry_Struct StructTable[10];
+struct CharactInfoEntry_Struct StructTable[100];
 
 bool CheckStructTable(struct CharactInfoEntry_Struct* p);
 

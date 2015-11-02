@@ -4,7 +4,7 @@
 bool CheckStructTable(struct CharactInfoEntry_Struct* p)
 {
 	int i = 0 ; 
-	for(; i < 10 ; i++)
+	for(; i < 100 ; i++)
 	{
 		if(StructTable[i].valid == 1)
 #ifdef DEBUG
@@ -68,7 +68,7 @@ bool IsSameInStruct(FieldList origin , char* name)
 void WriteStructTable(FieldList p , char* name)
 {
 	int i = 0;
-	for(; i < 10 ; i++)
+	for(; i < 100 ; i++)
 	{
 		if(StructTable[i].valid == 0)
 			break;
@@ -93,7 +93,7 @@ void WriteStructTable(FieldList p , char* name)
 FieldList FindStruct(char* name)
 {
 	int i = 0;
-	for(; i < 10 ; i++)
+	for(; i < 100 ; i++)
 	{
 		if(StructTable[i].valid == 1)
 		{

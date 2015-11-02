@@ -4,6 +4,7 @@ int b ;
 struct my
 {
 	int a = 0;
+	int a;
 	int b;
 	int tt;
 	int tt;
@@ -11,15 +12,21 @@ struct my
 	{
 		int aa;
 		int aa;
+		int a;
+		int bb;
 	} xx;
 };
 
 struct a k;
 struct my m1;
 
-int my_func(int a)
+int my_func(int arg1)
 {
 	int xxx;
-	return xx;
+	return xxx;
 }
 
+int my_func2()
+{
+	return m1.tt;
+}

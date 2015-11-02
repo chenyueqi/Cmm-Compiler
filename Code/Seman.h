@@ -34,6 +34,8 @@ bool IsSameName(char* name );
 void IsSameNameInStructure(FieldList field);
 bool IsSameType(Type target , Type origin);
 bool IsSameStructure(FieldList target , FieldList origin);
+bool IsSameNameInField(FieldList , char*);
+
 
 
 
@@ -55,7 +57,7 @@ char* CurrentTag(struct tree_node* p);
 
 FieldList CurrentVarDec(Type type , struct tree_node* p);
 
-void CurrentFunDec(Type inh , struct tree_node* p);
+void CurrentFunDec(Type inh , struct tree_node* p , bool);
 
 FieldList CurrentVarList(struct tree_node* p , int* para_amount);
 
@@ -90,4 +92,6 @@ void CurrentReturnExp(Type return_type , struct tree_node* p , bool* return_righ
 Type CurrentExp(struct tree_node* p);
 
 bool IsLeft(struct tree_node*p);
+
+FieldList CurrentArgs(struct tree_node*);
 #endif
