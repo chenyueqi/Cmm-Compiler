@@ -1,7 +1,7 @@
 #include"common.h"
 #include"FuncTable.h"
 
-void WriteFuncTable(char* name , Type return_type , int para_amount , FieldList parameter)
+int WriteFuncTable(char* name , Type return_type , int para_amount , FieldList parameter)
 {
 	int i = 0;
 	for(; i < 10 ; i++)
@@ -20,6 +20,7 @@ void WriteFuncTable(char* name , Type return_type , int para_amount , FieldList 
 	int length = strlen(name);
 	FuncTable[i].func_name = (char*)malloc(sizeof(char) * (length + 1));
 	strcpy(FuncTable[i].func_name , name);
+	return i;
 }
 
 bool IsSameFuncName(char* name)
@@ -28,8 +29,10 @@ bool IsSameFuncName(char* name)
 	for(; i < 10 ; i++)
 	{
 		if(FuncTable[i].valid == 1)
+		{
 			if(!strcmp(FuncTable[i].func_name , name))
 				return TRUE;
+		}
 	}
 	return FALSE;
 }

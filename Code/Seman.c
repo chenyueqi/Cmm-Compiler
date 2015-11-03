@@ -131,15 +131,8 @@ void CurrentExtDef(struct tree_node* p)
 			CurrentExtDecList(inh , p->children[1]);
 		else if(!strcmp(p->children[1]->token_name , "FunDec"))//ExtDef -> Specifer FunDec CompSt
 		{
-			bool return_right = FALSE;
-			CurrentCompSt(inh , p->children[2] , &return_right);
-			if(!return_right)
-			{
-				fprintf(stderr , "Error type 8 at Line %d : unmatched return type\n" , p->lineno);
-			CurrentFunDec(inh , p->children[1] , FALSE);
-				return;
-			}
-			CurrentFunDec(inh , p->children[1] , TRUE);
+			CurrentFunDec(inh , p->children[1]);
+			CurrentCompSt(inh , p->children[2]);
 		}
 	}
 	else if(p->children_num == 2)//ExtDef -> Specifier SEMI
@@ -297,7 +290,7 @@ FieldList CurrentVarDec(Type inh , struct tree_node* p)
 		return NULL;
 }
 
-void CurrentFunDec(Type inh ,struct tree_node* p , bool Isright)
+int CurrentFunDec(Type inh ,struct tree_node* p)
 {
 	if(p->children_num == 4)//FunDec -> ID LP VarList RP
 	{
@@ -305,14 +298,14 @@ void CurrentFunDec(Type inh ,struct tree_node* p , bool Isright)
 		if(IsSameFuncName(name))
 		{
 			fprintf(stderr , "Error type 4 at Line %d : Redefined function\n" , p->lineno);
+			return -1;
 		}
 		else
 		{	
 			Type return_type = inh;
 			int para_amount = 0;
 			FieldList parameter = CurrentVarList(p->children[2] , &para_amount);
-			if(Isright)
-				WriteFuncTable(name , return_type , para_amount , parameter);
+			return WriteFuncTable(name , return_type , para_amount , parameter);
 		}
 	}
 	else if(p->children_num == 3)//FunDec -> ID LP RP
@@ -321,14 +314,16 @@ void CurrentFunDec(Type inh ,struct tree_node* p , bool Isright)
 		if(IsSameFuncName(name))
 		{
 			fprintf(stderr , "Error type 4 at Line %d : Redefined function\n" , p->lineno);
+			return -1;
 		}
 		else
 		{
 			Type return_type = inh;
 			int para_amount = 0;
-			WriteFuncTable(name , return_type , para_amount , NULL);
+			return WriteFuncTable(name , return_type , para_amount , NULL);
 		}
 	}
+	return -1;
 }
 
 FieldList CurrentVarList(struct tree_node* p , int* para_amount)
@@ -359,7 +354,7 @@ FieldList CurrentVarList(struct tree_node* p , int* para_amount)
 Type CurrentParamDec(struct tree_node* p)
 {
 	Type type = CurrentSpecifier(p->children[0]);//ParamDec -> Specifier VarDec
-	CurrentVarDec(type , p->children[1]);
+	CurrentVarDec_1(type , p->children[1]);
 	return type;
 }
 
@@ -420,45 +415,45 @@ FieldList CurrentDec(Type type , struct tree_node* p)
 		return NULL;
 }
 
-void CurrentCompSt(Type type , struct tree_node* p , bool* return_right)//CompSt -> LC DefList StmtList Rc
+void CurrentCompSt(Type type , struct tree_node* p)//CompSt -> LC DefList StmtList Rc
 {
 	CurrentDefList_1(p->children[1]);//may be something wrong
-	CurrentStmtList(type , p->children[2] , return_right);
+	CurrentStmtList(type , p->children[2]);
 }
 
-void CurrentStmtList(Type type , struct tree_node* p , bool* return_right)
+void CurrentStmtList(Type type , struct tree_node* p)
 {
 	if(p == NULL)
 		return;
-	CurrentStmt(type , p->children[0] , return_right);
-	CurrentStmtList(type , p->children[1] , return_right);
+	CurrentStmt(type , p->children[0]);
+	CurrentStmtList(type , p->children[1]);
 }
 
-void CurrentStmt(Type type , struct tree_node* p , bool* return_right)
+void CurrentStmt(Type type , struct tree_node* p)
 {
 	if(p->children_num == 2)//Stmt -> Exp SEMI
 		CurrentExp(p->children[0]);
 	else if(p->children_num == 1)//Stmt -> CompSt
-		CurrentCompSt(type , p->children[0] , return_right);
+		CurrentCompSt(type , p->children[0]);
 	else if(p->children_num == 3)//Stmt -> RETURN Exp SEMI
-		CurrentReturnExp(type , p->children[1] , return_right);
+		CurrentReturnExp(type , p->children[1]);
 	else if(p->children_num == 5)//Stmt->IF LP Exp RP Stmt
 	{
 		CurrentExp(p->children[1]);
-		CurrentStmt(type , p->children[4] , return_right);
+		CurrentStmt(type , p->children[4]);
 	}
 	else if(p->children_num == 7)//Stmt->IF LP Exp RP Stmt ELSE Stmt
 	{
 		CurrentExp(p->children[1]);
 		/*TODO*/
-		CurrentStmt(type , p->children[4] , return_right);
-		CurrentStmt(type , p->children[6] , return_right);
+		CurrentStmt(type , p->children[4]);
+		CurrentStmt(type , p->children[6]);
 	}
 	else if(p->children_num == 5)//Stmt->WHILE LP Exp Rp Stmt
 	{
 		CurrentExp(p->children[1]);
 		/*TODO*/
-		CurrentStmt(type , p->children[4] , return_right);
+		CurrentStmt(type , p->children[4]);
 	}
 	return ;
 }
@@ -509,7 +504,7 @@ void CurrentDec_1(Type type , struct tree_node* p)
 			fprintf(stderr , "Error type 5 at Line %d : Not same type between ASSIGNOP\n" , p->lineno);
 			return;
 		}
-		if(IsSameType(type , CurrentExp(p->children[2])))
+		if(!IsSameType(type , CurrentExp(p->children[2])))
 		{
 			fprintf(stderr , "Error type 5 at Line %d : Not same type between ASSIGNOP\n" , p->lineno);
 			return;
@@ -550,12 +545,10 @@ FieldList CurrentVarDec_1(Type inh , struct tree_node* p)
 		return NULL;
 }
 
-void CurrentReturnExp(Type return_type , struct tree_node* p , bool* return_right)
+void CurrentReturnExp(Type return_type , struct tree_node* p)
 {
 	Type type = CurrentExp(p);
-	if(IsSameType(return_type , type))
-		*return_right = TRUE;
-	else
+	if(!IsSameType(return_type , type))
 		fprintf(stderr , "Error type 8 at Line %d : unmatched return type\n" , p->lineno);
 }
 
@@ -576,6 +569,7 @@ Type CurrentExp(struct tree_node* p)
 			}
 			else
 			{
+			fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 				if(!IsSameStructure(FuncTable[rank].parameter , CurrentArgs(p->children[2])))
 				{
 					 fprintf(stderr , "Error type 9 at Line %d : unmatched parameter \n" , p->lineno);
@@ -620,7 +614,10 @@ Type CurrentExp(struct tree_node* p)
 			Type type2 = CurrentExp(p->children[2]);
 			if(!IsSameType(type1 , type2))
 			{
-				fprintf(stderr , "Error type 5 at Line %d : Not same type\n" , p->lineno);
+				if(!strcmp(p->children[1]->token_name , "ASSIGNOP"))
+					fprintf(stderr , "Error type 5 at Line %d : Not same type\n" , p->lineno);
+				else
+					fprintf(stderr , "Error type 7 at Line %d : Not same operand\n" , p->lineno);
 				return NULL;
 			}
 			return type1;

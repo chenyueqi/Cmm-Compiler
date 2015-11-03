@@ -14,7 +14,7 @@ struct CharactInfoEntry_Func
 
 struct CharactInfoEntry_Func FuncTable[10];
 
-void WriteFuncTable(char* name , Type return_type , int para_amount , FieldList parameter);
+int WriteFuncTable(char* name , Type return_type , int para_amount , FieldList parameter);
 
 bool IsSameFuncName(char* name);
 

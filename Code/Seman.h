@@ -57,7 +57,7 @@ char* CurrentTag(struct tree_node* p);
 
 FieldList CurrentVarDec(Type type , struct tree_node* p);
 
-void CurrentFunDec(Type inh , struct tree_node* p , bool);
+int CurrentFunDec(Type inh , struct tree_node* p);
 
 FieldList CurrentVarList(struct tree_node* p , int* para_amount);
 
@@ -71,11 +71,11 @@ FieldList CurrentDecList(Type type , struct tree_node* p);
 
 FieldList CurrentDec(Type type , struct tree_node* p);
 
-void CurrentCompSt(Type type , struct tree_node* p , bool* return_right);
+void CurrentCompSt(Type type , struct tree_node* p);
 
-void CurrentStmtList(Type type , struct tree_node* p , bool* return_right);
+void CurrentStmtList(Type type , struct tree_node* p);
 
-void CurrentStmt(Type type , struct tree_node* p , bool* return_right);
+void CurrentStmt(Type type , struct tree_node* p);
 
 void CurrentDefList_1(struct tree_node* p);
 
@@ -87,7 +87,7 @@ void CurrentDec_1(Type type , struct tree_node* p);
 
 FieldList CurrentVarDec_1(Type type , struct tree_node* p);
 
-void CurrentReturnExp(Type return_type , struct tree_node* p , bool* return_right);
+void CurrentReturnExp(Type return_type , struct tree_node* p);
 
 Type CurrentExp(struct tree_node* p);
 
