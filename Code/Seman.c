@@ -439,19 +439,19 @@ void CurrentStmt(Type type , struct tree_node* p)
 		CurrentReturnExp(type , p->children[1]);
 	else if(p->children_num == 5)//Stmt->IF LP Exp RP Stmt
 	{
-		CurrentExp(p->children[1]);
+		CurrentExp(p->children[2]);
 		CurrentStmt(type , p->children[4]);
 	}
 	else if(p->children_num == 7)//Stmt->IF LP Exp RP Stmt ELSE Stmt
 	{
-		CurrentExp(p->children[1]);
+		CurrentExp(p->children[2]);
 		/*TODO*/
 		CurrentStmt(type , p->children[4]);
 		CurrentStmt(type , p->children[6]);
 	}
 	else if(p->children_num == 5)//Stmt->WHILE LP Exp Rp Stmt
 	{
-		CurrentExp(p->children[1]);
+		CurrentExp(p->children[2]);
 		/*TODO*/
 		CurrentStmt(type , p->children[4]);
 	}
@@ -470,7 +470,6 @@ void CurrentDefList_1(struct tree_node* p)
 void CurrentDef_1(struct tree_node* p)
 {
 	Type type = CurrentSpecifier(p->children[0]);
-	assert(type != NULL);
 	if(type == NULL)
 		return;
 	CurrentDecList_1(type , p->children[1]);//Def -> Specifier DecList SEMI
@@ -558,13 +557,16 @@ Type CurrentExp(struct tree_node* p)
 	{
 		if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP Args RP
 		{
+			Type type = FindId(p->children[0]->unit_name);
+			if(type != NULL)
+			{
+				fprintf(stderr , "Error type 11 at Line %d : use () in variable \n" , p->lineno); 
+				return NULL;
+			}
 		 	int rank = FindFunc(p->children[0]->unit_name);
 			if(rank == -1)
 			{
 				fprintf(stderr , "Error type 2 at Line %d : undefined function \n" , p->lineno);
-				Type type = FindId(p->children[0]->unit_name);
-				if(type != NULL)
-					 fprintf(stderr , "Error type 11 at Line %d : use () in variable \n" , p->lineno);
 				return NULL;
 			}
 			else
@@ -585,7 +587,6 @@ Type CurrentExp(struct tree_node* p)
 			{
 				fprintf(stderr , "Error type 12 at Line %d : not integer between [ ]  \n" , p->lineno);
 				 return NULL;
-
 			}
 			Type type1 = CurrentExp(p->children[0]);
 			if(type1->kind != ARRAY)
@@ -627,13 +628,16 @@ Type CurrentExp(struct tree_node* p)
 		
 		if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP RP
 		{
+			Type type = FindId(p->children[0]->unit_name);
+			if(type != NULL)
+			{
+				fprintf(stderr , "Error type 11 at Line %d : use () in variable \n" , p->lineno);
+				return NULL;
+			}
 		 	int rank = FindFunc(p->children[0]->unit_name);
 			if(rank == -1)
 			{
 				fprintf(stderr , "Error type 2 at Line %d : undefined function \n" , p->lineno);
-				Type type = FindId(p->children[0]->unit_name);
-				if(type != NULL)
-					 fprintf(stderr , "Error type 11 at Line %d : use () in variable \n" , p->lineno);
 				return NULL;
 			}
 			else
