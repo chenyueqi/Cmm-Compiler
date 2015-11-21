@@ -275,6 +275,7 @@ FieldList CurrentVarDec(Type inh , struct tree_node* p)
 			strcpy(field->name , p->children[0]->unit_name);
 			field->type = inh;
 			field->lineno = p->lineno;
+			WriteIdTable(inh , p->children[0]->unit_name);
 			return field;
 		}
 	}
@@ -571,7 +572,6 @@ Type CurrentExp(struct tree_node* p)
 			}
 			else
 			{
-			fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 				if(!IsSameStructure(FuncTable[rank].parameter , CurrentArgs(p->children[2])))
 				{
 					 fprintf(stderr , "Error type 9 at Line %d : unmatched parameter \n" , p->lineno);
@@ -658,12 +658,13 @@ Type CurrentExp(struct tree_node* p)
 				 fprintf(stderr , "Error type 13 at Line %d : use '.' in non-structure \n" , p->lineno);
 				 return NULL;
 			}
-			if(!IsSameNameInField(type->u.structure , p->children[2]->unit_name))
+			else if(!IsSameNameInField(type->u.structure , p->children[2]->unit_name))
 			{
 				 fprintf(stderr , "Error type 14 at Line %d : use not defined field in structure \n" , p->lineno);
 				 return NULL;
 			}
-			return CurrentExp(p->children[2]);
+			else
+				return CurrentExp(p->children[2]);
 		}
 	}
 	else if(p->children_num == 2)
@@ -693,6 +694,16 @@ Type CurrentExp(struct tree_node* p)
 		}
 		else
 			return NULL;
+	}
+	else if(p->children_num == 0)
+	{
+		if(!strcmp(p->token_name , "ID"))
+		{
+			Type type =  FindId(p->unit_name);
+			if(type == NULL)
+				fprintf(stderr , "Error type 1 at Line %d : undefined variable\n" , p->lineno);
+			return type;
+		}
 	}
 		return NULL;
 }

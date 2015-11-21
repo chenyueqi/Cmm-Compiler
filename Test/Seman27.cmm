@@ -1,0 +1,9 @@
+struct Vector{
+	float x , y;
+};
+
+int Multiplication(struct Vector A, struct Vector B)
+{
+	float c = A.x* B.y + A.y* B.x;
+	return c;
+}

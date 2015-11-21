@@ -1,0 +1,16 @@
+struct Male{
+	int age ;
+	int weight;
+};
+
+struct Female{
+	int circumference[3];
+	float w;
+};
+
+int main()
+{
+	struct Male a;
+	struct Female b;
+	a = b;
+}

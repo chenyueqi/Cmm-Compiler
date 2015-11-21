@@ -1,0 +1,12 @@
+struct Vector{
+	int x	,y;
+};
+
+int main()
+{
+	struct Vector A;
+	float b;
+	A.x = 12;
+	A.y = 13;
+	b = 2*A;
+}

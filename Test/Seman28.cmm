@@ -1,0 +1,22 @@
+int Exchange(int x , int y)
+{
+	int i = 0;
+	if(x >= 0){
+		while(i < x)
+			i = i + 1;
+		x = y ;
+		y = i;
+	}
+	else{
+		while(i > x)
+			i = i -1;
+		x = y;
+		y = i;
+	}
+	return 0;
+}
+
+int main()
+{
+	Exchange(1,2,3);
+}

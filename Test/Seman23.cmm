@@ -1,0 +1,18 @@
+int multiply(int a , int b)
+{
+	int c = a * b;
+	return c;
+}
+
+int main()
+{
+	int x = 1;
+	int y = -1;
+	return multiply(x ,y);
+}
+
+int multiply(int u , int v)
+{
+	int z = x + y;
+	return z;
+}

@@ -10,7 +10,6 @@ int WriteFuncTable(char* name , Type return_type , int para_amount , FieldList p
 			break;
 	}
 
-	/* to make sure that the array is not fill TODO*/
 	FuncTable[i].valid = 1;
 
 	FuncTable[i].return_type = return_type;

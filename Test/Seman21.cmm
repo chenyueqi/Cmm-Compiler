@@ -1,0 +1,6 @@
+int print(int a)
+{
+	int x = 0;
+	int y = a + x;
+	printf(y);
+}

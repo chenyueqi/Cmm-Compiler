@@ -19,6 +19,12 @@ struct tree_node
 
 void Seman_analysis(struct tree_node* root);
 
+void translate(struct tree_node* root);
+
 void display_tree(struct tree_node* , int);//display syntax tree
+
+void pre_occupy_func();
+
+void outputInterCode(char* outfile_name);
 
 #endif

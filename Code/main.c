@@ -10,17 +10,6 @@ extern int yyparse(void);
 extern void yyrestart (FILE *input_file  );
 extern unsigned int error_num;
 
-/*
-struct tree_node
-{
-	int lineno;
-	int type;
-	char* unit_name;
-	char* token_name;
-	unsigned int children_num;
-	struct tree_node** children;
-};
-*/
 struct tree_node* root;
 
 //void display_tree(struct tree_node* , int);// display syntax tree
@@ -31,12 +20,30 @@ extern int yylineno;
 
 int main(int argc , char** argv)
 {
-	if(argc < 2)
+	FILE* source = fopen(argv[1] , "r");
+	if(!source)
 	{
-		yyparse();
-		return 0;
+		perror(argv[1]);
+		return 1;
 	}
-	int i = 0;
+	yyrestart(source);
+	yyparse();
+	if(error_num == 0)
+	{
+		pre_occupy_func();
+		Seman_analysis(root);
+		translate(root);
+		distroy_tree(root);
+	}
+	else
+		error_num = 0;
+	yylineno = 1;
+	fclose(source);
+
+	outputInterCode(argv[2]);
+
+	return 0;
+/*	int i = 0;
 	for(i = 1 ; i < argc ; i ++)
 	{
 		FILE* f = fopen(argv[i] , "r");
@@ -45,8 +52,8 @@ int main(int argc , char** argv)
 			perror(argv[i]);
 			return 1;
 		}
-		printf("========================\n");
-		printf("*** %s ***\n" , argv[i]);
+	//	printf("========================\n");
+	//	printf("*** %s ***\n" , argv[i]);
 		yyrestart(f);
 		yyparse();
 		if(error_num == 0)
@@ -61,8 +68,8 @@ int main(int argc , char** argv)
 		yylineno = 1;
 		fclose(f);
 	}
-	printf("========================\n");
-	return 0;
+//	printf("========================\n");
+	return 0;*/
 }
 
 struct tree_node* creat_node(int arity , char* token_name , struct YYLTYPE* current_pos, ...)

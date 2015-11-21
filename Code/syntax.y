@@ -48,7 +48,7 @@
 Program : ExtDefList {$$ = creat_node(1 , "Program" , &@$ ,  $1); root = $$;}
 ;
 ExtDefList : ExtDef ExtDefList {$$ = creat_node(2 , "ExtDefList" , &@$ ,  $1 , $2);}
-| %empty {$$ = creat_node(0 , "ExtDefList" , &@$);}
+| {$$ = creat_node(0 , "ExtDefList" , &@$);}
 ;
 ExtDef : Specifier ExtDecList SEMI {$$ = creat_node(3 , "ExtDef" , &@$ ,  $1 , $2 , $3);}
 | Specifier SEMI {$$ = creat_node(2 , "ExtDef" , &@$ ,  $1 , $2);}
@@ -68,7 +68,7 @@ StructSpecifier : STRUCT OptTag LC DefList RC {$$ = creat_node(5 , "StructSpecif
 | STRUCT Tag {$$ = creat_node(2 , "StructSpecifier" , &@$ ,  $1 , $2);}
 ;
 OptTag : ID {$$ = creat_node(1 , "OptTag" , &@$ ,  $1);}
-| %empty {$$ = creat_node(0 , "OptTag" , &@$);}
+|  {$$ = creat_node(0 , "OptTag" , &@$);}
 ;
 Tag : ID {$$ = creat_node(1 , "Tag" , &@$ ,  $1);}
 ;
@@ -92,7 +92,7 @@ CompSt : LC DefList StmtList RC {$$ = creat_node(4 , "CompSt" , &@$ ,  $1 , $2 ,
 | error RC {}
 ;
 StmtList : Stmt StmtList {$$ = creat_node(2 , "StmtList" , &@$ ,  $1 , $2);}
-| %empty {$$ = creat_node(0 , "StmtList" , &@$);}
+| {$$ = creat_node(0 , "StmtList" , &@$);}
 ;
 Stmt : Exp SEMI {$$ = creat_node(2 , "Stmt" , &@$ ,  $1 , $2);}
 | CompSt {$$ = creat_node(1 , "stmt" , &@$ , $1);}
@@ -105,7 +105,7 @@ Stmt : Exp SEMI {$$ = creat_node(2 , "Stmt" , &@$ ,  $1 , $2);}
 
 
 DefList : Def DefList {$$ = creat_node(2 , "DefList" , &@$ ,  $1 , $2);}
-| %empty {$$ = creat_node(0 , "DefList" , &@$);}
+| {$$ = creat_node(0 , "DefList" , &@$);}
 ;
 Def : Specifier DecList SEMI {$$ = creat_node(3 , "Def" , &@$ ,  $1 , $2 , $3);}
 ;
