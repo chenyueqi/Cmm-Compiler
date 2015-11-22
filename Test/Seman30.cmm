@@ -1,0 +1,23 @@
+int fetch(int m)
+{
+	int a[6];
+	int i = 0;
+	int temp;
+	while(i < 6){
+		a[i] = i + 1;
+	}
+	if(m == 0) return 0;
+	temp = m;
+	i = 0;
+	while(i < m){
+		temp = m(i);
+		i = i +1;
+	}
+	return temp;
+}
+
+int main()
+{
+	int t = 0;
+	fetch(t);
+}

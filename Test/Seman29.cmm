@@ -1,0 +1,10 @@
+struct Vector{
+	int x ,y;
+};
+
+int main()
+{
+	struct Vector v1 , v2;
+	v1[1] = 1;
+	return 0;
+}

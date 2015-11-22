@@ -1,11 +1,12 @@
 #ifndef __TRAN__
 #define __TRAN__
+
 #include"common.h"
 typedef struct Operand_* Operand;
 
 struct Operand_
 {
-	enum {VARIABLE , CONSTANT , ADDRESS , LABLE_SIGN , func} kind;
+	enum {VARIABLE , CONSTANT , ADDRESS , LABLE_SIGN , FUNC} kind;
 	union
 	{
 		int var_no;
@@ -44,6 +45,10 @@ struct InterCodes
 };
 
 struct InterCodes* code_head;
+struct InterCodes* current_code;
+int variable_num;
+
+void insertcode(struct InterCodes* );
 
 void outputlable(struct InterCodes* , FILE* des);
 
@@ -71,4 +76,7 @@ void outputread(struct InterCodes* , FILE* des);
 
 void outputwrite(struct InterCodes* , FILE* des);
 
+void translate_function(struct tree_node* );
+
+void translate_exp(struct tree_node*);
 #endif

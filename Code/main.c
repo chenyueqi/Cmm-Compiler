@@ -30,9 +30,10 @@ int main(int argc , char** argv)
 	yyparse();
 	if(error_num == 0)
 	{
-		pre_occupy_func();
+//		pre_occupy_func();
 		Seman_analysis(root);
-		translate(root);
+//		initial_InterCodes();
+//		translate(root);
 		distroy_tree(root);
 	}
 	else
@@ -40,7 +41,7 @@ int main(int argc , char** argv)
 	yylineno = 1;
 	fclose(source);
 
-	outputInterCode(argv[2]);
+//	outputInterCode(argv[2]);
 
 	return 0;
 /*	int i = 0;

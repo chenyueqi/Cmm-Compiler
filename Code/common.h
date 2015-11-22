@@ -27,4 +27,6 @@ void pre_occupy_func();
 
 void outputInterCode(char* outfile_name);
 
+void initial_InterCodes();
+
 #endif

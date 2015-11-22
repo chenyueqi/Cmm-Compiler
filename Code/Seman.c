@@ -594,8 +594,8 @@ Type CurrentExp(struct tree_node* p)
 				fprintf(stderr , "Error type 10 at Line %d :  use [ ] on non-array \n" , p->lineno);
 				return NULL;
 			}
-
-
+			else
+				return type1->u.array.elem;
 		}
 
 	}
