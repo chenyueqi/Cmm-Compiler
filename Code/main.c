@@ -30,10 +30,10 @@ int main(int argc , char** argv)
 	yyparse();
 	if(error_num == 0)
 	{
-//		pre_occupy_func();
+		pre_occupy_func();
 		Seman_analysis(root);
-//		initial_InterCodes();
-//		translate(root);
+		initial_InterCodes();
+		translate(root);
 		distroy_tree(root);
 	}
 	else

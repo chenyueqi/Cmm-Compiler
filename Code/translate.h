@@ -6,11 +6,12 @@ typedef struct Operand_* Operand;
 
 struct Operand_
 {
-	enum {VARIABLE , CONSTANT , ADDRESS , LABLE_SIGN , FUNC} kind;
+	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABLE_SIGN , FUNC} kind;
 	union
 	{
 		int var_no;
 		int value;
+		int temp_no;
 		int lable_no;
 		char* func_name;
 	}u;
@@ -47,6 +48,7 @@ struct InterCodes
 struct InterCodes* code_head;
 struct InterCodes* current_code;
 int variable_num;
+int temp_num;
 
 void insertcode(struct InterCodes* );
 
@@ -78,5 +80,5 @@ void outputwrite(struct InterCodes* , FILE* des);
 
 void translate_function(struct tree_node* );
 
-void translate_exp(struct tree_node*);
+void translate_exp(struct tree_node* , Operand);
 #endif

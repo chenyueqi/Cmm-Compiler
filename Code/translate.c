@@ -1,6 +1,7 @@
 #include"common.h"
 #include"translate.h"
 #include"FuncTable.h"
+#include"IdTable.h"
 
 void pre_occupy_func()
 {
@@ -139,6 +140,7 @@ void initial_InterCodes()
 	code_head->prev = code_head;
 	current_code = code_head;
 	variable_num = 0;
+	temp_num = 0;
 }
 
 void insertcode(struct InterCodes* new_code)
@@ -149,6 +151,7 @@ void insertcode(struct InterCodes* new_code)
 	current_code = new_code;
 
 }
+
 void translate(struct tree_node* p)
 {
 	if(p == NULL)
@@ -159,8 +162,8 @@ void translate(struct tree_node* p)
 		return;
 	}
 	else if(!strcmp(p->token_name , "Exp"))
-	{
-		translate_exp(p);
+	{	Operand op1;
+		translate_exp(p, op1);
 		return ;
 	}
 	else
@@ -187,23 +190,48 @@ void translate_function(struct tree_node* p)
 	return;
 }
 
-void translate_exp(struct tree_node* p)
+void translate_exp(struct tree_node* p , Operand place)
 {
 	if(p->children_num == 1)
 	{
-		if(!strcmp(p->children[0]->token_name , "ID"))
+		if(!strcmp(p->children[0]->token_name , "INT"))
 		{
+			place = (Operand)malloc(sizeof(struct Operand_));
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
 
-		}
-		else if(!strcmp(p->children[0]->token_name , "INT"))
-		{
-			fprintf(stderr , "%s , %d\n" , __FILE__ , __LINE__);
+			Operand right;
+			right = (Operand)malloc(sizeof(struct Operand_));
+			right->kind = CONSTANT;
+			right->u.value = atoi(p->children[0]->unit_name);
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ASSIGN;
+			new_code->code.u.assignop.x = place;
+			new_code->code.u.assignop.y = right;
 
-
+			insertcode(new_code);
 		}
 		else if(!strcmp(p->children[0]->token_name , "FLOAT"))
 		{
+			/* it seems never appear*/
+			return;
+		}
+		else if(!strcmp(p->children[0]->token_name , "ID"))
+		{
+			place = (Operand)malloc(sizeof(struct Operand_));
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
 
+			Operand right;
+			right = (Operand)malloc(sizeof(struct Operand_));
+			right->kind = VARIABLE;
+			right->u.var_no = lookup(p->children[0]->unit_name);
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ASSIGN;
+			new_code->code.u.assignop.x = place;
+			new_code->code.u.assignop.y = right;
+
+			insertcode(new_code);
 		}
 		else
 			return;
@@ -211,6 +239,33 @@ void translate_exp(struct tree_node* p)
 	}
 	else if(p->children_num == 2)
 	{
+		if(!strcmp(p->children[0]->token_name , "MINUS"))
+		{
+			Operand t1;
+			translate_exp(p->children[1] , t1);
+			place = (Operand)malloc(sizeof(struct Operand_));
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
+
+			Operand mid;
+			mid = (Operand)malloc(sizeof(struct Operand_));
+			mid->kind = CONSTANT;
+			mid->u.value = 0;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = SUB;
+			new_code->code.u.alop.x = place;
+			new_code->code.u.alop.y = mid;
+			new_code->code.u.alop.z = t1;
+
+			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[0]->token_name , "NOT"))
+		{
+
+		}
+		else
+			return;
 
 	}
 	else if(p->children_num == 3)

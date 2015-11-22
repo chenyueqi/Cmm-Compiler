@@ -36,3 +36,18 @@ Type FindId(char* name)
 	}
 	return NULL;
 }
+
+int lookup(char* name)
+{
+	int i = 0;
+	for(; i < 100 ; i++)
+	{
+		if(IdTable[i].valid == 1)
+		{
+			if(!strcmp(IdTable[i].Id_name , name))
+				return IdTable[i].var_no;
+			else
+				return -1;
+		}
+	}
+}
