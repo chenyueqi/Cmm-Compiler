@@ -25,7 +25,7 @@ void display_tree(struct tree_node* , int);//display syntax tree
 
 void pre_occupy_func();
 
-void outputInterCode(char* outfile_name);
+void outputInterCode();
 
 void initial_InterCodes();
 

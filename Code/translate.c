@@ -27,108 +27,113 @@ void pre_occupy_func()
 	WriteFuncTable("write" , return_type , para_amount , parameter);
 }
 
-void outputInterCode(char* file_name)
+void outputInterCode()
 {
-	FILE* des = fopen(file_name , "w");
-	if(!des)
-	{
-		perror(file_name);
-		return;
-	}
 	struct InterCodes* intercode_p = code_head;
 	while(intercode_p->next != code_head)
 	{
 		intercode_p = intercode_p -> next;
 		switch(intercode_p->code.kind)
 		{
-case LABLE:		outputlable(intercode_p , des);		break;
-case FUNCTION:		outputfunction(intercode_p , des);	break;
+case LABLE:		outputlable(intercode_p);		break;
+case FUNCTION:		outputfunction(intercode_p);	break;
 case ADD:
 case SUB:
 case MUL:
-case DIV:		outputalop(intercode_p , des);		break;
+case DIV:		outputalop(intercode_p);		break;
 case ADD_ASSIGN:
 case REF_ASSIGN:
 case ASSIGN_REF:
-case ASSIGN:		outputassign(intercode_p , des);	break;
-case GOTO:		outputgoto(intercode_p , des);		break;
-case RELOP_GOTO: 	outputrelopgoto(intercode_p , des);	break;
-case RETURN:		outputreturn(intercode_p , des);	break;
-case DEC:		outputdec(intercode_p , des);		break;
-case ARG:		outputarg(intercode_p , des);		break;
-case CALLFUNC:		outputcallfunc(intercode_p , des);	break;
-case PARAM:		outputparam(intercode_p , des);		break;
-case READ:		outputread(intercode_p , des);		break;
-case WRITE:		outputwrite(intercode_p , des);		break;
+case ASSIGN:		outputassign(intercode_p);	break;
+case GOTO:		outputgoto(intercode_p);		break;
+case RELOP_GOTO: 	outputrelopgoto(intercode_p);	break;
+case RETURN:		outputreturn(intercode_p);	break;
+case DEC:		outputdec(intercode_p);		break;
+case ARG:		outputarg(intercode_p);		break;
+case CALLFUNC:		outputcallfunc(intercode_p);	break;
+case PARAM:		outputparam(intercode_p);		break;
+case READ:		outputread(intercode_p);		break;
+case WRITE:		outputwrite(intercode_p);		break;
 default:	fprintf(stderr , "%s , %d , %d \n" , __FILE__ , __LINE__ , intercode_p->code.kind);
 		}
 	}
-	fclose(des);
+}
+
+void outputoperand(Operand op)
+{
+	switch(op->kind)
+	{
+		case VARIABLE: 	printf("v%d" , op->u.var_no);break;
+		case TEMP:	printf("t%d" , op->u.temp_no);break;
+		case CONSTANT:	printf("#%d" , op->u.value);break;
+	}
+}
+
+void outputlable(struct InterCodes* intercode_p)
+{
+	printf("LABLE lable%d :\n" , intercode_p->code.u.lable.x->u.lable_no);
+}
+
+void outputfunction(struct InterCodes* intercode_p)
+{
+	printf("FUNCTION %s :\n" , intercode_p->code.u.function.f->u.func_name);
+}
+
+void outputalop(struct InterCodes* intercode_p)
+{
+
+}
+
+void outputassign(struct InterCodes* intercode_p)
+{
+	outputoperand(intercode_p->code.u.assignop.x);
+	printf(" := ");
+	outputoperand(intercode_p->code.u.assignop.y);
+	printf("\n");
+}
+
+void outputgoto(struct InterCodes* intercode_p)
+{
+	printf("GOTO lable%d : \n" , intercode_p->code.u.gotolable.x->u.lable_no);
+}
+
+void outputrelopgoto(struct InterCodes* intercode_p)
+{
+
+}
+
+void outputreturn(struct InterCodes* intercode_p)
+{
+	printf("RETURN \n");
+}
+
+void outputdec(struct InterCodes* intercode_p)
+{
+
+}
+
+
+void outputarg(struct InterCodes* intercode_p)
+{
+
+}
+
+void outputcallfunc(struct InterCodes* intercode_p)
+{
 	
 }
 
-void outputlable(struct InterCodes* intercode_p , FILE* des)
-{
-	fprintf(des , "LABLE lable%d :\n" , intercode_p->code.u.lable.x->u.lable_no);
-}
-
-void outputfunction(struct InterCodes* intercode_p , FILE* des)
-{
-	fprintf(des , "FUNCTION %s :\n" , intercode_p->code.u.function.f->u.func_name);
-}
-
-void outputalop(struct InterCodes* intercode_p , FILE* des)
-{
-
-}
-
-void outputassign(struct InterCodes* intercode_p , FILE* des)
-{
-
-}
-
-void outputgoto(struct InterCodes* intercode_p , FILE* des)
-{
-	fprintf(des , "GOTO lable%d : \n" , intercode_p->code.u.gotolable.x->u.lable_no);
-}
-
-void outputrelopgoto(struct InterCodes* intercode_p , FILE* des)
-{
-
-}
-
-void outputreturn(struct InterCodes* intercode_p , FILE* des)
-{
-	fprintf(des , "RETURN \n");
-}
-
-void outputdec(struct InterCodes* intercode_p , FILE* des)
-{
-
-}
-
-
-void outputarg(struct InterCodes* intercode_p , FILE* des)
-{
-
-}
-
-void outputcallfunc(struct InterCodes* intercode_p , FILE* des)
+void outputparam(struct InterCodes* intercode_p)
 {
 	
 }
 
-void outputparam(struct InterCodes* intercode_p , FILE* des)
+void outputread(struct InterCodes* intercode_p)
 {
 	
 }
 
-void outputread(struct InterCodes* intercode_p , FILE* des)
-{
-	
-}
-
-void outputwrite(struct InterCodes* intercode_p , FILE* des)
+void outputwrite(struct InterCodes* intercode_p)
 {
 	
 }
@@ -149,7 +154,7 @@ void insertcode(struct InterCodes* new_code)
 	new_code->next = current_code->next;
 	current_code->next = new_code;
 	current_code = new_code;
-
+	code_head->prev = current_code;
 }
 
 void translate(struct tree_node* p)
@@ -163,6 +168,7 @@ void translate(struct tree_node* p)
 	}
 	else if(!strcmp(p->token_name , "Exp"))
 	{	Operand op1;
+		op1 = (Operand)malloc(sizeof(struct Operand_));
 		translate_exp(p, op1);
 		return ;
 	}
@@ -196,7 +202,6 @@ void translate_exp(struct tree_node* p , Operand place)
 	{
 		if(!strcmp(p->children[0]->token_name , "INT"))
 		{
-			place = (Operand)malloc(sizeof(struct Operand_));
 			place->kind = TEMP;
 			place->u.temp_no = ++temp_num;
 
@@ -210,6 +215,7 @@ void translate_exp(struct tree_node* p , Operand place)
 			new_code->code.u.assignop.y = right;
 
 			insertcode(new_code);
+			return;
 		}
 		else if(!strcmp(p->children[0]->token_name , "FLOAT"))
 		{
@@ -218,7 +224,6 @@ void translate_exp(struct tree_node* p , Operand place)
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))
 		{
-			place = (Operand)malloc(sizeof(struct Operand_));
 			place->kind = TEMP;
 			place->u.temp_no = ++temp_num;
 
@@ -232,6 +237,8 @@ void translate_exp(struct tree_node* p , Operand place)
 			new_code->code.u.assignop.y = right;
 
 			insertcode(new_code);
+
+			return;
 		}
 		else
 			return;
@@ -242,8 +249,9 @@ void translate_exp(struct tree_node* p , Operand place)
 		if(!strcmp(p->children[0]->token_name , "MINUS"))
 		{
 			Operand t1;
+			t1 = (Operand)malloc(sizeof(struct Operand_));
 			translate_exp(p->children[1] , t1);
-			place = (Operand)malloc(sizeof(struct Operand_));
+
 			place->kind = TEMP;
 			place->u.temp_no = ++temp_num;
 
@@ -270,6 +278,24 @@ void translate_exp(struct tree_node* p , Operand place)
 	}
 	else if(p->children_num == 3)
 	{
+		if(!strcmp(p->children[1]->token_name , "ASSIGNOP"))
+		{
+			char* id_name = p->children[0]->children[0]->unit_name;
+			int var_no = lookup(id_name);
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[2] , t1);
+
+			place->kind = VARIABLE;
+			place->u.var_no = var_no;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ASSIGN;
+			new_code->code.u.assignop.x = place;
+			new_code->code.u.assignop.y = t1;
+
+
+			insertcode(new_code);
+		}
 
 	}
 	else if(p->children_num == 4)

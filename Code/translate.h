@@ -52,31 +52,33 @@ int temp_num;
 
 void insertcode(struct InterCodes* );
 
-void outputlable(struct InterCodes* , FILE* des);
+void outputoperand(Operand);
 
-void outputfunction(struct InterCodes* , FILE* des);
+void outputlable(struct InterCodes*);
 
-void outputalop(struct InterCodes* , FILE* des);
+void outputfunction(struct InterCodes*);
 
-void outputassign(struct InterCodes* , FILE* des);
+void outputalop(struct InterCodes*);
 
-void outputgoto(struct InterCodes* , FILE* des);
+void outputassign(struct InterCodes*);
 
-void outputrelopgoto(struct InterCodes* , FILE* des);
+void outputgoto(struct InterCodes*);
 
-void outputreturn(struct InterCodes* , FILE* des);
+void outputrelopgoto(struct InterCodes*);
 
-void outputdec(struct InterCodes* , FILE* des);
+void outputreturn(struct InterCodes*);
 
-void outputarg(struct InterCodes* , FILE* des);
+void outputdec(struct InterCodes*);
 
-void outputcallfunc(struct InterCodes* , FILE* des);
+void outputarg(struct InterCodes*);
 
-void outputparam(struct InterCodes* , FILE* des);
+void outputcallfunc(struct InterCodes*);
 
-void outputread(struct InterCodes* , FILE* des);
+void outputparam(struct InterCodes*);
 
-void outputwrite(struct InterCodes* , FILE* des);
+void outputread(struct InterCodes*);
+
+void outputwrite(struct InterCodes*);
 
 void translate_function(struct tree_node* );
 

@@ -41,7 +41,7 @@ int main(int argc , char** argv)
 	yylineno = 1;
 	fclose(source);
 
-//	outputInterCode(argv[2]);
+	outputInterCode();
 
 	return 0;
 /*	int i = 0;

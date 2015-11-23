@@ -1,1 +1,3 @@
-FUNCTION myfunc :
+FUNCTION main :
+t1 := #0
+v1 := t1
