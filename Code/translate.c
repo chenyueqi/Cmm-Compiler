@@ -5,7 +5,6 @@
 
 void pre_occupy_func()
 {
-
 	Type return_type = (Type)malloc(sizeof(struct Type_));
 	return_type->kind = BASIC;
 	return_type->u.basic = 0;
@@ -35,7 +34,7 @@ void outputInterCode()
 		intercode_p = intercode_p -> next;
 		switch(intercode_p->code.kind)
 		{
-case LABLE:		outputlable(intercode_p);		break;
+case LABEL:		outputlabel(intercode_p);		break;
 case FUNCTION:		outputfunction(intercode_p);	break;
 case ADD:
 case SUB:
@@ -69,9 +68,9 @@ void outputoperand(Operand op)
 	}
 }
 
-void outputlable(struct InterCodes* intercode_p)
+void outputlabel(struct InterCodes* intercode_p)
 {
-	printf("LABLE lable%d :\n" , intercode_p->code.u.lable.x->u.lable_no);
+	printf("LABEL lable%d :\n" , intercode_p->code.u.label.x->u.label_no);
 }
 
 void outputfunction(struct InterCodes* intercode_p)
@@ -81,6 +80,18 @@ void outputfunction(struct InterCodes* intercode_p)
 
 void outputalop(struct InterCodes* intercode_p)
 {
+	outputoperand(intercode_p->code.u.alop.x);
+	printf(" := ");
+	outputoperand(intercode_p->code.u.alop.y);
+	switch(intercode_p->code.kind)
+	{
+		case ADD: printf(" + ");break;
+		case SUB: printf(" - ");break;
+		case MUL: printf(" * ");break;
+		case DIV: printf(" / ");break;
+	}
+	outputoperand(intercode_p->code.u.alop.z);
+	printf("\n");
 
 }
 
@@ -94,7 +105,7 @@ void outputassign(struct InterCodes* intercode_p)
 
 void outputgoto(struct InterCodes* intercode_p)
 {
-	printf("GOTO lable%d : \n" , intercode_p->code.u.gotolable.x->u.lable_no);
+	printf("GOTO lable%d : \n" , intercode_p->code.u.gotolabel.x->u.label_no);
 }
 
 void outputrelopgoto(struct InterCodes* intercode_p)
@@ -146,6 +157,7 @@ void initial_InterCodes()
 	current_code = code_head;
 	variable_num = 0;
 	temp_num = 0;
+	label_num = 0;
 }
 
 void insertcode(struct InterCodes* new_code)
@@ -295,6 +307,104 @@ void translate_exp(struct tree_node* p , Operand place)
 
 
 			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[1]->token_name , "PLUS"))
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0] , t1);
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[2] , t2);
+
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ADD;
+			new_code->code.u.alop.x = place;
+			new_code->code.u.alop.y = t1;
+			new_code->code.u.alop.z = t2;
+
+			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[1]->token_name , "MINUS"))
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0] , t1);
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[2] , t2);
+
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = SUB;
+			new_code->code.u.alop.x = place;
+			new_code->code.u.alop.y = t1;
+			new_code->code.u.alop.z = t2;
+
+			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[1]->token_name , "STAR"))
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0] , t1);
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[2] , t2);
+
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = MUL;
+			new_code->code.u.alop.x = place;
+			new_code->code.u.alop.y = t1;
+			new_code->code.u.alop.z = t2;
+
+			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[1]->token_name , "DIV"))
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0] , t1);
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[2] , t2);
+
+			place->kind = TEMP;
+			place->u.temp_no = ++temp_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = DIV;
+			new_code->code.u.alop.x = place;
+			new_code->code.u.alop.y = t1;
+			new_code->code.u.alop.z = t2;
+
+			insertcode(new_code);
+		}
+		else if(!strcmp(p->children[1]->token_name , "RELOP"))
+		{
+			Operand label1;
+			label1 = (Operand)malloc(sizeof(struct Operand_));
+			label1->kind = LABEL_SIGN;
+			label1->u.label_no = ++label_num;
+
+			Operand label2;
+			label2 = (Operand)malloc(sizeof(struct Operand_));
+			label2->kind = LABEL_SIGN;
+			label2->u.label_no = ++label_num;
+
+
+		}
+		else if(!strcmp(p->children[1]->token_name , "AND"))
+		{
+
+		}
+		else if(!strcmp(p->children[1]->token_name , "OR"))
+		{
+
 		}
 
 	}

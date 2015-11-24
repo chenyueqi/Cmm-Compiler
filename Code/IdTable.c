@@ -53,8 +53,8 @@ int lookup(char* name)
 					IdTable[i].var_no = ++variable_num;
 				return IdTable[i].var_no;
 			}
-			else
-				return -1;
 		}
+
 	}
+	return -1;
 }

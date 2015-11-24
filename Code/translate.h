@@ -6,27 +6,27 @@ typedef struct Operand_* Operand;
 
 struct Operand_
 {
-	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABLE_SIGN , FUNC} kind;
+	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC} kind;
 	union
 	{
 		int var_no;
 		int value;
 		int temp_no;
-		int lable_no;
+		int label_no;
 		char* func_name;
 	}u;
 };
 
 struct InterCode
 {
-	enum {LABLE , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN ,DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;
+	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN ,DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;
 	union
 	{
-		struct {Operand x;} lable;
+		struct {Operand x;} label;
 		struct {Operand f;} function;
 		struct {Operand x, y, z;} alop;
 		struct {Operand x , y;} assignop;
-		struct {Operand x;} gotolable;
+		struct {Operand x;} gotolabel;
 		struct {Operand x, y, z , relop;} relopgoto;
 		struct {Operand x;} ret;
 		struct {Operand x ,  size;} dec;
@@ -49,12 +49,13 @@ struct InterCodes* code_head;
 struct InterCodes* current_code;
 int variable_num;
 int temp_num;
+int label_num;
 
 void insertcode(struct InterCodes* );
 
 void outputoperand(Operand);
 
-void outputlable(struct InterCodes*);
+void outputlabel(struct InterCodes*);
 
 void outputfunction(struct InterCodes*);
 
