@@ -95,11 +95,11 @@ StmtList : Stmt StmtList {$$ = creat_node(2 , "StmtList" , &@$ ,  $1 , $2);}
 | {$$ = creat_node(0 , "StmtList" , &@$);}
 ;
 Stmt : Exp SEMI {$$ = creat_node(2 , "Stmt" , &@$ ,  $1 , $2);}
-| CompSt {$$ = creat_node(1 , "stmt" , &@$ , $1);}
-| RETURN Exp SEMI {$$ = creat_node(3 , "stmt" , &@$ , $1 , $2 , $3);}
-| IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$ = creat_node(5 , "stmt" , &@$ , $1 , $2 , $3 , $4 , $5);}
-| IF LP Exp RP Stmt ELSE Stmt {$$ = creat_node(7 , "stmt" , &@$ , $1 , $2 , $3 , $4 , $5 , $6 , $7);}
-| WHILE LP Exp RP Stmt {$$ = creat_node(5 , "stmt" , &@$ , $1 , $2 , $3 , $4 , $5);}
+| CompSt {$$ = creat_node(1 , "Stmt" , &@$ , $1);}
+| RETURN Exp SEMI {$$ = creat_node(3 , "Stmt" , &@$ , $1 , $2 , $3);}
+| IF LP Exp RP Stmt %prec LOWER_THAN_ELSE {$$ = creat_node(5 , "Stmt" , &@$ , $1 , $2 , $3 , $4 , $5);}
+| IF LP Exp RP Stmt ELSE Stmt {$$ = creat_node(7 , "Stmt" , &@$ , $1 , $2 , $3 , $4 , $5 , $6 , $7);}
+| WHILE LP Exp RP Stmt {$$ = creat_node(5 , "Stmt" , &@$ , $1 , $2 , $3 , $4 , $5);}
 | error SEMI {}
 ;
 

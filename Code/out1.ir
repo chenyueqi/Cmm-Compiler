@@ -7,3 +7,5 @@ t3 := v1
 t4 := v2
 t5 := t3 + t4
 v3 := t5
+t6 := v3
+RETURN t6

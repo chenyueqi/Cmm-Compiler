@@ -30,6 +30,7 @@ int main(int argc , char** argv)
 	yyparse();
 	if(error_num == 0)
 	{
+//		display_tree(root , 0);
 		pre_occupy_func();
 		Seman_analysis(root);
 		initial_InterCodes();

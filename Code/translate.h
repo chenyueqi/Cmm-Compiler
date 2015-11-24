@@ -53,35 +53,41 @@ int label_num;
 
 void insertcode(struct InterCodes* );
 
-void outputoperand(Operand);
+void outputoperand(Operand , FILE* );
 
-void outputlabel(struct InterCodes*);
+void outputlabel(struct InterCodes* , FILE*);
 
-void outputfunction(struct InterCodes*);
+void outputfunction(struct InterCodes* , FILE*);
 
-void outputalop(struct InterCodes*);
+void outputalop(struct InterCodes* , FILE*);
 
-void outputassign(struct InterCodes*);
+void outputassign(struct InterCodes* , FILE*);
 
-void outputgoto(struct InterCodes*);
+void outputgoto(struct InterCodes* , FILE*);
 
-void outputrelopgoto(struct InterCodes*);
+void outputrelopgoto(struct InterCodes* , FILE*);
 
-void outputreturn(struct InterCodes*);
+void outputreturn(struct InterCodes* , FILE*);
 
-void outputdec(struct InterCodes*);
+void outputdec(struct InterCodes* , FILE*);
 
-void outputarg(struct InterCodes*);
+void outputarg(struct InterCodes* , FILE*);
 
-void outputcallfunc(struct InterCodes*);
+void outputcallfunc(struct InterCodes* , FILE*);
 
-void outputparam(struct InterCodes*);
+void outputparam(struct InterCodes* , FILE*);
 
-void outputread(struct InterCodes*);
+void outputread(struct InterCodes* , FILE*);
 
-void outputwrite(struct InterCodes*);
+void outputwrite(struct InterCodes* , FILE*);
 
 void translate_function(struct tree_node* );
 
 void translate_exp(struct tree_node* , Operand);
+
+void translate_cond(struct tree_node* , Operand , Operand);
+
+void translate_stmt(struct tree_node*);
+
+void optimize();
 #endif
