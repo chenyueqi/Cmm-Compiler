@@ -6,7 +6,7 @@ typedef struct Operand_* Operand;
 
 struct Operand_
 {
-	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC} kind;
+	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC , RELOP} kind;
 	union
 	{
 		int var_no;
@@ -14,12 +14,13 @@ struct Operand_
 		int temp_no;
 		int label_no;
 		char* func_name;
+		int relop;
 	}u;
 };
 
 struct InterCode
 {
-	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN ,DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;
+	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN , DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;
 	union
 	{
 		struct {Operand x;} label;
@@ -50,6 +51,10 @@ struct InterCodes* current_code;
 int variable_num;
 int temp_num;
 int label_num;
+
+int get_relop(struct tree_node*);
+
+void output_relop(Operand , FILE*);
 
 void insertcode(struct InterCodes* );
 
@@ -88,6 +93,8 @@ void translate_exp(struct tree_node* , Operand);
 void translate_cond(struct tree_node* , Operand , Operand);
 
 void translate_stmt(struct tree_node*);
+
+void translate_compst(struct tree_node*);
 
 void optimize();
 #endif
