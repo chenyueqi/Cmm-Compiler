@@ -559,7 +559,6 @@ void translate_cond(struct tree_node* p , Operand label_true , Operand label_fal
 		Operand t1 = (Operand)malloc(sizeof(struct Operand_));
 		translate_exp(p , t1);
 
-
 		Operand relop = (Operand)malloc(sizeof(struct Operand_));
 		relop->kind = RELOP;
 		relop->u.relop = 5;//!=
@@ -574,13 +573,11 @@ void translate_cond(struct tree_node* p , Operand label_true , Operand label_fal
 		new_code->code.u.relopgoto.y = t2;
 		new_code->code.u.relopgoto.z = label_true;
 		new_code->code.u.relopgoto.relop = relop;
-
 		insertcode(new_code);
 
 		new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 		new_code->code.kind = GOTO;
 		new_code->code.u.gotolabel.x = label_false;
-
 		insertcode(new_code);
 
 		return;
@@ -608,16 +605,128 @@ void translate_stmt(struct tree_node* p)
 		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 		new_code->code.kind = RETURN;
 		new_code->code.u.ret.x = op1;
-
 		insertcode(new_code);
+
+		return;
 	}
 	else if(p->children_num == 5)
 	{
+		if(!strcmp(p->children[0]->token_name , "IF"))//Stmt -> IF LP Exp RP Stmt
+		{
+			Operand label1 = (Operand)malloc(sizeof(struct Operand_));
+			label1->kind = LABEL_SIGN;
+			label1->u.label_no = ++label_num;
+
+			Operand label2 = (Operand)malloc(sizeof(struct Operand_));
+			label2->kind = LABEL_SIGN;
+			label2->u.label_no = ++label_num;
+
+			translate_cond(p->children[2] , label1 , label2);
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = LABEL;
+			new_code->code.u.label.x = label1;
+			insertcode(new_code);
+
+			translate_stmt(p->children[4]);
+
+			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = LABEL;
+			new_code->code.u.label.x = label2;
+			insertcode(new_code);
+
+			return;
+		}
+		else if(!strcmp(p->children[0]->token_name , "WHILE"))//Stmt -> WHILE LP Exp RP Stmt
+		{
+			Operand label1 = (Operand)malloc(sizeof(struct Operand_));
+			label1->kind = LABEL_SIGN;
+			label1->u.label_no = ++label_num;
+
+			Operand label2 = (Operand)malloc(sizeof(struct Operand_));
+			label2->kind = LABEL_SIGN;
+			label2->u.label_no = ++label_num;
+
+			Operand label3 = (Operand)malloc(sizeof(struct Operand_));
+			label3->kind = LABEL_SIGN;
+			label3->u.label_no = ++label_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = LABEL;
+			new_code->code.u.label.x = label1;
+			insertcode(new_code);
+
+			translate_cond(p->children[2] , label2 , label3);
+
+			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = LABEL;
+			new_code->code.u.label.x = label2;
+			insertcode(new_code);
+
+			translate_stmt(p->children[4]);
+
+			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = GOTO;
+			new_code->code.u.gotolabel.x = label1;
+			insertcode(new_code);
+
+			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = LABEL;
+			new_code->code.u.label.x = label3;
+			insertcode(new_code);
+
+			return ;
+		}
+		else
+			return;
 
 	}
-	else if(p->children_num == 7)
+	else if(p->children_num == 7)//Stmt -> IF LP Exp RP Stmt ELSE Stmt
 	{
+		Operand label1 = (Operand)malloc(sizeof(struct Operand_));
+		label1->kind = LABEL_SIGN;
+		label1->u.label_no = ++label_num;
 
+		Operand label2 = (Operand)malloc(sizeof(struct Operand_));
+		label2->kind = LABEL_SIGN;
+		label2->u.label_no = ++label_num;
+
+		Operand label3 = (Operand)malloc(sizeof(struct Operand_));
+		label3->kind = LABEL_SIGN;
+		label3->u.label_no = ++label_num;
+		
+		//code1
+		translate_cond(p->children[2] , label2 , label3);
+
+		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = LABEL;
+		new_code->code.u.label.x = label1;
+		insertcode(new_code);
+
+		//code2
+		translate_stmt(p->children[4]);
+
+		new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = GOTO;
+		new_code->code.u.gotolabel.x = label3;
+		insertcode(new_code);
+
+		new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = LABEL;
+		new_code->code.u.label.x = label2;
+		insertcode(new_code);
+
+		//code3
+		translate_stmt(p->children[6]);
+
+		new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = LABEL;
+		new_code->code.u.label.x = label3;
+		insertcode(new_code);
+
+		return ;
 	}
 	else
 		return;
