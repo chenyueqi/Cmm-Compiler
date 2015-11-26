@@ -1,11 +1,5 @@
+t1 := #18
 FUNCTION main :
-t1 := #0
-v1 := t1
-t2 := #0
-v2 := t2
-t3 := v1
-t4 := v2
-t5 := t3 + t4
-v3 := t5
-t6 := v3
-RETURN t6
+t2 := #25
+v-1 := t2
+v-1 := v0

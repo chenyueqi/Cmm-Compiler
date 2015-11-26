@@ -1,0 +1,11 @@
+struct Vector{
+	float x , y;
+};
+
+int main()
+{
+	struct Vector v;
+	float f;
+	f = v.x + v.y - v.z;
+	return 0;
+}

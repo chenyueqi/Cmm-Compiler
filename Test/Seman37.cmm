@@ -1,0 +1,11 @@
+struct Male{
+	int age = 18;
+	float weight;
+};
+
+int main()
+{
+	struct Male Jeff;
+	Jeff.age = 25;
+	Jeff.weight = 70.5;
+}

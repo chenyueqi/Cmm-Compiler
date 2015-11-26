@@ -264,7 +264,7 @@ FieldList CurrentVarDec(Type inh , struct tree_node* p)
 	{
 		if(IsSameName(p->children[0]->unit_name))
 		{
-			fprintf(stderr , "Error type 3 at Line %d : Redefined variable '%s'\n" , p->lineno , p->children[0]->unit_name);
+			fprintf(stderr , "Error type 15 at Line %d : Redefined variable in strucin structt'%s'\n" , p->lineno , p->children[0]->unit_name);
 			return NULL;
 		}
 		else

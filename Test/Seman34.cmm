@@ -1,0 +1,10 @@
+struct Human{
+	int age , weight;
+	float weight;
+};
+
+int main()
+{
+	struct Human Tom;
+	Tom.weight = 60;
+}

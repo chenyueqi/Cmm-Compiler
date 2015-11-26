@@ -1,0 +1,10 @@
+struct Male{
+	int age , weight;
+};
+
+int main()
+{
+	struct Male Jason;
+	struct Female Becky;
+	return 0;
+}
