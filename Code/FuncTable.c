@@ -47,3 +47,16 @@ int FindFunc(char* name)
 	}
 	return -1;
 }
+
+struct CharactInfoEntry_Func* lookup_functable(char* func_name)
+{
+	int i = 0;
+	for( ; i < 10 ; i++)
+	{
+		if(FuncTable[i].valid == 1)
+			if(!strcmp(FuncTable[i].func_name , func_name))
+				return &FuncTable[i];
+	}
+	return NULL;
+
+}

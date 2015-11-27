@@ -78,12 +78,14 @@ void outputoperand(Operand op , FILE* des)
 		case VARIABLE: 	fprintf(des , "v%d" , op->u.var_no);break;
 		case TEMP:	fprintf(des , "t%d" , op->u.temp_no);break;
 		case CONSTANT:	fprintf(des , "#%d" , op->u.value);break;
+		case FUNC:	fprintf(des , "%s" , op->u.func_name);break;
+		case LABEL_SIGN:fprintf(des , "label%d" , op->u.label_no);break;
 	}
 }
 
 void outputlabel(struct InterCodes* intercode_p , FILE* des)
 {
-	fprintf(des , "LABEL lable%d :\n" , intercode_p->code.u.label.x->u.label_no);
+	fprintf(des , "LABEL label%d :\n" , intercode_p->code.u.label.x->u.label_no);
 }
 
 void outputfunction(struct InterCodes* intercode_p , FILE* des)
@@ -118,17 +120,18 @@ void outputassign(struct InterCodes* intercode_p , FILE* des)
 
 void outputgoto(struct InterCodes* intercode_p , FILE* des)
 {
-	fprintf(des , "GOTO lable%d : \n" , intercode_p->code.u.gotolabel.x->u.label_no);
+	fprintf(des , "GOTO label%d\n" , intercode_p->code.u.gotolabel.x->u.label_no);
 }
 
 void outputrelopgoto(struct InterCodes* intercode_p , FILE* des)
 {
-	fprintf(des , "IF");
+	fprintf(des , "IF ");
 	outputoperand(intercode_p->code.u.relopgoto.x ,des);
 	fprintf(des , " ");
 	output_relop(intercode_p->code.u.relopgoto.relop , des);
 	fprintf(des , " ");
 	outputoperand(intercode_p->code.u.relopgoto.y ,des);
+	fprintf(des , " ");
 	fprintf(des , "GOTO ");
 	outputoperand(intercode_p->code.u.relopgoto.z ,des);
 	fprintf(des , "\n");
@@ -154,7 +157,10 @@ void outputarg(struct InterCodes* intercode_p , FILE* des)
 
 void outputcallfunc(struct InterCodes* intercode_p , FILE* des)
 {
-	
+	outputoperand(intercode_p->code.u.callfunc.x , des);
+	fprintf(des , " := CALL ");
+	outputoperand(intercode_p->code.u.callfunc.f , des);
+	fprintf(des , "\n");
 }
 
 void outputparam(struct InterCodes* intercode_p , FILE* des)
@@ -164,7 +170,9 @@ void outputparam(struct InterCodes* intercode_p , FILE* des)
 
 void outputread(struct InterCodes* intercode_p , FILE* des)
 {
-	
+	fprintf(des , "READ ");
+	outputoperand(intercode_p->code.u.read.x , des);
+	fprintf(des , "\n");
 }
 
 void outputwrite(struct InterCodes* intercode_p , FILE* des)
@@ -233,8 +241,10 @@ void translate(struct tree_node* p)
 		translate_function(p);
 		return;
 	}
-	else if(!strcmp(p->token_name , "Exp"))
+
+/*	else if(!strcmp(p->token_name , "Exp"))
 	{
+		fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 		Operand op1;
 		op1 = (Operand)malloc(sizeof(struct Operand_));
 		translate_exp(p, op1);
@@ -242,8 +252,14 @@ void translate(struct tree_node* p)
 	}
 	else if(!strcmp(p->token_name , "Stmt"))
 	{
+		fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 		translate_stmt(p);
 		return;
+	}
+*/
+	else if(!strcmp(p->token_name , "CompSt"))
+	{
+		translate_compst(p);
 	}
 	else
 	{
@@ -264,7 +280,6 @@ void translate_function(struct tree_node* p)
 	new_code->code.u.function.f->kind = FUNC;
 	new_code->code.u.function.f->u.func_name = (char*)malloc(sizeof(char) * (strlen(func_name) + 1));
 	strcpy(new_code->code.u.function.f->u.func_name , func_name);
-
 	insertcode(new_code);
 	return;
 }
@@ -303,7 +318,7 @@ void translate_exp(struct tree_node* p , Operand place)
 			Operand right;
 			right = (Operand)malloc(sizeof(struct Operand_));
 			right->kind = VARIABLE;
-			right->u.var_no = lookup(p->children[0]->unit_name);
+			right->u.var_no = lookup_idtable(p->children[0]->unit_name);
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
@@ -353,7 +368,7 @@ void translate_exp(struct tree_node* p , Operand place)
 		if(!strcmp(p->children[1]->token_name , "ASSIGNOP"))//Exp -> Exp ASSIGNOP Exp
 		{
 			char* id_name = p->children[0]->children[0]->unit_name;
-			int var_no = lookup(id_name);
+			int var_no = lookup_idtable(id_name);
 			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
 			translate_exp(p->children[2] , t1);
 
@@ -417,24 +432,23 @@ here:
 			t1->kind = CONSTANT;
 			t1->u.value = 0;
 
+			//code0
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
 			new_code->code.u.assignop.y = t1;
-			
-			//code0
 			insertcode(new_code);
 			
 			//code1
 			translate_cond(p , label1 , label2);
 
+			//code2
 			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = LABEL;
 			new_code->code.u.label.x = label1;
-
-			//code2
 			insertcode(new_code);
 
+			//code2
 			t1 = (Operand)malloc(sizeof(struct Operand_));
 			t1->kind = CONSTANT;
 			t1->u.value = 1;
@@ -443,8 +457,6 @@ here:
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
 			new_code->code.u.assignop.y = t1;
-			
-			//code2
 			insertcode(new_code);
 
 			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
@@ -455,8 +467,43 @@ here:
 
 			return ;
 		}
-		else if(!strcmp(p->children[1]->token_name , "DOT"))
+		else if(!strcmp(p->children[1]->token_name , "DOT"))//Exp -> Exp DOT ID
 		{
+
+		}
+		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP RP
+		{
+			struct CharactInfoEntry_Func* function = lookup_functable(p->children[0]->unit_name); 
+			if(!strcmp(function->func_name , "read"))
+			{
+				place->kind = TEMP;
+				place->u.temp_no = ++temp_num;
+
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = READ;
+				new_code->code.u.read.x = place;
+				insertcode(new_code);
+				return;
+
+			}
+			else
+			{
+				place->kind = TEMP;
+				place->u.temp_no = ++temp_num;
+
+				Operand func = (Operand)malloc(sizeof(struct Operand_));
+				func->kind = FUNC;
+				func->u.func_name = (char*)malloc(sizeof(char) * (strlen(function->func_name) + 1));
+				strcpy(func->u.func_name , function->func_name);
+
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = CALLFUNC;
+				new_code->code.u.callfunc.x = place;
+				new_code->code.u.callfunc.f = func;
+				insertcode(new_code);
+				return;
+			}
+
 
 		}
 		else 
@@ -467,10 +514,53 @@ here:
 	{
 		if(!strcmp(p->children[1]->token_name , "LB"))
 		{
-			fprintf(stderr , "Cannot translate: Code contains variables or parameter of structions type\n");
+			fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
 			exit(1);
 		}
+		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP Args Rp
+		{
+			struct CharactInfoEntry_Func* function = lookup_functable(p->children[0]->unit_name); 
+			struct Arg* arg_list = NULL;
+			translate_args(p->children[2] , &arg_list);
 
+			if(!strcmp(function->func_name , "write"))
+			{
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = WRITE;
+				new_code->code.u.write.x = arg_list->op;
+				insertcode(new_code);
+			}
+			else
+			{
+				struct Arg* arg_p = arg_list;
+		       		while(arg_p != NULL)
+				{
+					struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+					new_code->code.kind = ARG;
+					new_code->code.u.arg.x = arg_p->op;
+					insertcode(new_code);
+
+					arg_p = arg_p->next;
+				}	
+
+				place->kind = TEMP;
+				place->u.temp_no = ++temp_num;
+
+				Operand func = (Operand)malloc(sizeof(struct Operand_));
+				func->kind = FUNC;
+				func->u.func_name = (char*)malloc(sizeof(char) * (strlen(function->func_name) + 1));
+				strcpy(func->u.func_name , function->func_name);
+
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = CALLFUNC;
+				new_code->code.u.callfunc.x = place;
+				new_code->code.u.callfunc.f = func;
+				insertcode(new_code);
+				return;
+			}
+		}
+		else 
+			return;
 	}
 	else 
 		return;
@@ -734,6 +824,105 @@ void translate_stmt(struct tree_node* p)
 
 void translate_compst(struct tree_node* p)
 {
-
+	translate_deflist(p->children[1]);
+	translate_stmtlist(p->children[2]);
 }
 
+void translate_deflist(struct tree_node* p)
+{
+	if(p == NULL)
+		return ;
+	else
+	{
+		translate_def(p->children[0]);
+		translate_deflist(p->children[1]);
+		return;
+	}
+}
+
+void translate_stmtlist(struct tree_node* p)
+{
+	if(p == NULL)
+		return;
+	else
+	{
+		translate_stmt(p->children[0]);
+		translate_stmtlist(p->children[1]);
+		return;
+	}
+}
+
+void translate_def(struct tree_node* p)
+{
+	translate_declist(p->children[1]);
+}
+
+void translate_declist(struct tree_node* p)
+{
+	if(p->children_num == 1)
+	{
+		translate_dec(p->children[0]);
+		return;
+
+	}
+	else if(p->children_num == 3)
+	{
+		translate_dec(p->children[0]);
+		translate_declist(p->children[2]);
+		return;
+	}
+	else
+		return;
+}
+
+void translate_dec(struct tree_node* p)
+{
+	if(p->children_num == 1)
+		return;
+	else if(p->children_num == 3)// Dec -> VarDec ASSIGNOP Exp
+	{
+
+		char* id_name = p->children[0]->children[0]->unit_name;
+		int var_no = lookup_idtable(id_name);
+		Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+		translate_exp(p->children[2] , t1);
+
+		Operand place = (Operand)malloc(sizeof(struct Operand_));
+		place->kind = VARIABLE;
+		place->u.var_no = var_no;
+
+		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = ASSIGN;
+		new_code->code.u.assignop.x = place;
+		new_code->code.u.assignop.y = t1;
+
+		insertcode(new_code);
+		return;
+	}
+	else
+		return;
+}
+
+void translate_args(struct tree_node* p , struct Arg** arg_list)
+{
+	Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+	translate_exp(p->children[0] , t1);
+
+	if(&arg_list == NULL)
+	{
+		*arg_list = (struct Arg*)malloc(sizeof(struct Arg));
+		(*arg_list)->op = t1;
+		(*arg_list)->next = NULL;
+	}
+	else
+	{
+		struct Arg* current_arg = (struct Arg*)malloc(sizeof(struct Arg));
+		current_arg->next = *arg_list;
+		current_arg->op = t1;
+		*arg_list = current_arg;
+	}
+	if(p->children_num == 3)//Args -> Exp COMMA Args
+		translate_args(p->children[2] , arg_list);
+	else 
+		return;
+}

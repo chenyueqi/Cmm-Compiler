@@ -18,6 +18,6 @@ void WriteIdTable(Type inh , char *name);
 
 Type FindId(char* name);
 
-int lookup(char* name);
+int lookup_idtable(char* name);
 
 #endif

@@ -46,6 +46,12 @@ struct InterCodes
 	struct InterCodes* next;
 };
 
+struct Arg
+{
+	Operand op;
+	struct Arg* next;
+};
+
 struct InterCodes* code_head;
 struct InterCodes* current_code;
 int variable_num;
@@ -95,6 +101,18 @@ void translate_cond(struct tree_node* , Operand , Operand);
 void translate_stmt(struct tree_node*);
 
 void translate_compst(struct tree_node*);
+
+void translate_deflist(struct tree_node*);
+
+void translate_stmtlist(struct tree_node*);
+
+void translate_def(struct tree_node*);
+
+void translate_declist(struct tree_node*);
+
+void translate_dec(struct tree_node*);
+
+void translate_args(struct tree_node* , struct Arg**);
 
 void optimize();
 #endif

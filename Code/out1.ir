@@ -1,5 +1,22 @@
-t1 := #18
+FUNCTION test :
+t1 := #1
+t2 := #0
+IF t1 > t2 GOTO label2
+GOTO label3
+LABEL label1 :
+t3 := #0
+RETURN t3
+GOTO label3
+LABEL label2 :
+t4 := #1
+RETURN t4
+LABEL label3 :
 FUNCTION main :
-t2 := #25
-v-1 := t2
-v-1 := v0
+t5 := #1
+v1 := t5
+READ t6
+v2 := t6
+t7 := CALL test
+v1 := t7
+t8 := v2
+RETURN t8

@@ -20,4 +20,6 @@ bool IsSameFuncName(char* name);
 
 int FindFunc(char* name);
 
+struct CharactInfoEntry_Func* lookup_functable(char* func_name);
+
 #endif

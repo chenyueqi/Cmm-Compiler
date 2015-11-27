@@ -1,8 +1,16 @@
+int test()
+{
+	if(1 > 0)
+		return 0;
+	else
+		return 1;
+}
+
 int main()
 {
-	int i , j , k;
-	i = 0;
-	j = 0;
-	k = i + j;
-	return k;
+	int n;
+	int x = 1;
+	n = read();
+	x = test();
+	return n;
 }

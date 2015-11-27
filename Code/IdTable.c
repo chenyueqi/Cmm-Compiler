@@ -40,7 +40,7 @@ Type FindId(char* name)
 	return NULL;
 }
 
-int lookup(char* name)
+int lookup_idtable(char* name)
 {
 	int i = 0;
 	for(; i < 100 ; i++)
