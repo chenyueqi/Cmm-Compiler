@@ -16,7 +16,13 @@ int main()
 {
 	int n;
 	struct Operands op;
+	int array[10];
 	int x = 1;
+	int y ;
+	array[1] = 10;
+	op.o1 = 20;
+	op.o2 = 100;
+	y = array[x];
 	n = read();
 	x = test(op);
 	write(x);

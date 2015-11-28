@@ -75,12 +75,13 @@ void outputoperand(Operand op , FILE* des)
 {
 	switch(op->kind)
 	{
-		case VARIABLE: 	fprintf(des , "v%d" , op->u.var_no);break;
-		case TEMP:	fprintf(des , "t%d" , op->u.temp_no);break;
-		case CONSTANT:	fprintf(des , "#%d" , op->u.value);break;
-		case FUNC:	fprintf(des , "%s" , op->u.func_name);break;
-		case LABEL_SIGN:fprintf(des , "label%d" , op->u.label_no);break;
-		case ADDRESS:	fprintf(des , "&v%d" , op->u.var_no);break;
+		case VARIABLE: 		fprintf(des , "v%d" , op->u.var_no);break;
+		case TEMP:		fprintf(des , "t%d" , op->u.temp_no);break;
+		case CONSTANT:		fprintf(des , "#%d" , op->u.value);break;
+		case FUNC:		fprintf(des , "%s" , op->u.func_name);break;
+		case LABEL_SIGN:	fprintf(des , "label%d" , op->u.label_no);break;
+		case ADDRESS:		fprintf(des , "&v%d" , op->u.var_no);break;
+		case READ_ADDRESS:	fprintf(des , "*t%d" , op->u.temp_no);break;
 	}
 }
 
@@ -337,8 +338,8 @@ void translate_exp(struct tree_node* p , Operand place)
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
 			new_code->code.u.assignop.y = right;
-
 			insertcode(new_code);
+
 			return;
 		}
 		else
@@ -386,14 +387,20 @@ void translate_exp(struct tree_node* p , Operand place)
 			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
 			translate_exp(p->children[2] , t1);
 
-			place->kind = VARIABLE;
-			place->u.var_no = var_no;
-
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0] , t2);
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
-			new_code->code.u.assignop.x = place;
+			new_code->code.u.assignop.x = t2;
 			new_code->code.u.assignop.y = t1;
+			insertcode(new_code);
 
+			place->kind = TEMP;
+			place->u.var_no = ++temp_num;
+			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ASSIGN;
+			new_code->code.u.assignop.x = place;
+			new_code->code.u.assignop.y = t1;//根据经验，使用后面的一个优化更加方便
 			insertcode(new_code);
 			return;
 		}
@@ -476,7 +483,6 @@ here:
 			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = LABEL;
 			new_code->code.u.label.x = label2;
-
 			insertcode(new_code);
 
 			return ;
@@ -485,9 +491,26 @@ here:
 		{
 			Operand op1;
 			op1 = (Operand)malloc(sizeof(struct Operand_));
-			translate_exp(p->children[0], op1);
-			/*TODO*/
+			int size = 0;
+			translate_exp_dot_id(p , op1 , &size);
 
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			t1->kind = CONSTANT;
+			t1->u.value = size;
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			t2->kind = TEMP;
+			t2->u.temp_no = ++ temp_num;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = ADD;
+			new_code->code.u.alop.x = t2;
+		        new_code->code.u.alop.y = op1;
+			new_code->code.u.alop.z = t1;	
+			insertcode(new_code);
+
+			place->kind = READ_ADDRESS;	
+			place->u.temp_no = t2->u.temp_no;
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP RP
 		{
@@ -530,10 +553,57 @@ here:
 	}
 	else if(p->children_num == 4)
 	{
-		if(!strcmp(p->children[1]->token_name , "LB"))
+		if(!strcmp(p->children[1]->token_name , "LB"))//Exp -> Exp LB Exp RB
 		{
-			fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
-			exit(1);
+			if(strcmp(p->children[0]->children[0]->token_name , "ID"))//第一个Exp 应该是ID，似乎不需要判断
+			{
+				fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+				return;
+			}
+			else
+			{
+				Operand t1 = (Operand)malloc(sizeof(struct Operand_));	
+
+				Operand t2 = (Operand)malloc(sizeof(struct Operand_));	
+				t2->kind = TEMP;
+				t2->u.temp_no = ++temp_num;
+
+				Operand t3 = (Operand)malloc(sizeof(struct Operand_));	
+				t3->kind = TEMP;
+				t3->u.temp_no = ++temp_num;
+
+				char* name = p->children[0]->children[0]->unit_name;
+				int rank = lookup_idtable_rank(name);
+				int size = get_size_type(IdTable[rank].type->u.array.elem);
+
+				translate_exp(p->children[2] , t1);
+
+
+				Operand t4 = (Operand)malloc(sizeof(struct Operand_));
+				t4->kind = CONSTANT;
+				t4->u.value = size;
+
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = MUL;
+				new_code->code.u.alop.x = t2;
+				new_code->code.u.alop.y = t1;
+				new_code->code.u.alop.z = t4;
+				insertcode(new_code);
+
+				Operand op = (Operand)malloc(sizeof(struct Operand_));
+				op->kind = ADDRESS;
+				op->u.var_no = IdTable[rank].var_no;
+
+				new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = ADD;
+				new_code->code.u.alop.x = t3;
+				new_code->code.u.alop.y = op;
+				new_code->code.u.alop.z = t2;
+				insertcode(new_code);
+
+				place->kind = READ_ADDRESS;
+				place->u.temp_no = t3->u.temp_no;
+			}
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP Args Rp
 		{
@@ -898,7 +968,19 @@ void translate_dec(struct tree_node* p)
 {
 	if(p->children_num == 1)//Dec -> VarDec
 	{
-		char* id_name = p->children[0]->children[0]->unit_name;
+		char *id_name = NULL;
+		if(p->children[0]->children_num == 1)//VarDec -> ID
+			id_name = p->children[0]->children[0]->unit_name;
+		else//VarDec -> VarDec LB INT RB
+		{
+			if(p->children[0]->children[0]->children_num == 1)
+				id_name = p->children[0]->children[0]->children[0]->unit_name;
+			else//高维数组
+			{
+				fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+				return;
+			}
+		}
 		int rank = lookup_idtable_rank(id_name);
 		if(IdTable[rank].type->kind == STRUCT)// judge the type of VarDec
 		{
@@ -911,8 +993,23 @@ void translate_dec(struct tree_node* p)
 			new_code->code.kind = DEC;
 			new_code->code.u.dec.x = place;
 			new_code->code.u.dec.size = size;
-
 			insertcode(new_code);
+
+			return;
+		}
+		else if(IdTable[rank].type->kind == ARRAY)//如果是一维数组，也要分配空间
+		{
+			int size = get_size_type(IdTable[rank].type);
+			Operand place = (Operand)malloc(sizeof(struct Operand_));
+			place->kind = VARIABLE;
+			place->u.var_no = IdTable[rank].var_no;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = DEC;
+			new_code->code.u.dec.x = place;
+			new_code->code.u.dec.size = size;
+			insertcode(new_code);
+
 			return;
 		}
 		else
@@ -984,10 +1081,10 @@ void translate_paramdec(struct tree_node* p)
 
 void translate_vardec(struct tree_node* p)//only used in paramdec
 {
-	if(p->children_num == 4)//VarDec -> VarDec LB INT RB
+	if(p->children_num == 4)//VarDec -> VarDec LB INT RB 数组不作为参数传入
 	{
 		fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
-		exit(1);
+		return;
 	}
 	else
 	{
@@ -1012,8 +1109,14 @@ int get_size_type(Type type)
 		sum_size += 4;
 	else if(type->kind == ARRAY)
 	{
-		fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
-		exit(1);
+/*		if(type->u.array.elem->kind == ARRAY)
+		{
+			fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+			exit(1);
+		}
+		else
+*/
+		sum_size = sum_size + type->u.array.size * get_size_type(type->u.array.elem);
 	}
 	else if(type->kind == STRUCT)
 		sum_size += get_size_structure(type->u.structure);
@@ -1032,4 +1135,32 @@ int get_size_structure(FieldList fieldlist)
 		field = field->next;
 	}
 	return sum_size;
+}
+
+FieldList translate_exp_dot_id(struct tree_node* p , Operand place , int* size)
+{
+	FieldList subfield = NULL;
+	if(p->children_num == 3)//Exp -> Exp DOT ID
+	{
+		subfield = translate_exp_dot_id(p->children[0] , place , size);
+		while(subfield != NULL)
+		{
+			if(!strcmp(subfield->name , p->children[2]->unit_name))
+				break;
+			else
+				(*size) = (*size) + get_size_type(subfield->type);
+			subfield = subfield->next;
+		}
+		fprintf(stderr , "%d\n" , *size);
+		return subfield;
+	}
+	else//Exp -> ID
+	{
+		translate_exp(p , place);
+		*size = 0;
+		int rank = lookup_idtable_rank(p->children[0]->unit_name);
+		Type type = IdTable[rank].type;
+		subfield = type->u.structure;
+		return subfield;
+	}
 }

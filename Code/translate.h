@@ -7,7 +7,7 @@ typedef struct Operand_* Operand;
 
 struct Operand_
 {
-	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC , RELOP} kind;
+	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC , RELOP , READ_ADDRESS} kind;
 	union
 	{
 		int var_no;
@@ -126,4 +126,7 @@ void optimize();
 int get_size_type(Type type);
 
 int get_size_structure(FieldList fieldlist);
+
+FieldList translate_exp_dot_id(struct tree_node* , Operand , int*);
+
 #endif

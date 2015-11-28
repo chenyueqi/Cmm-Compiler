@@ -14,15 +14,42 @@ RETURN t4
 LABEL label3 :
 FUNCTION main :
 DEC v3 8 
+DEC v4 40 
 t5 := #1
-v4 := t5
-READ t6
-v2 := t6
-t7 := &v3
-ARG t7
-t8 := CALL test
-v4 := t8
-t9 := v4
-WRITE t9
-t10 := v2
-RETURN t10
+v5 := t5
+t6 := #10
+t9 := #1
+t7 := t9 * #4
+t8 := &v4 + t7
+*t8 := t6
+t10 := t6
+t11 := #20
+t12 := &v3
+t13 := t12 + #0
+*t13 := t11
+t14 := t11
+t15 := #100
+t16 := &v3
+t17 := t16 + #4
+*t17 := t15
+t18 := t15
+t21 := v5
+t19 := t21 * #4
+t20 := &v4 + t19
+t22 := v6
+t22 := *t20
+t23 := *t20
+READ t24
+t25 := v2
+t25 := t24
+t26 := t24
+t27 := &v3
+ARG t27
+t28 := CALL test
+t29 := v5
+t29 := t28
+t30 := t28
+t31 := v5
+WRITE t31
+t32 := v2
+RETURN t32
