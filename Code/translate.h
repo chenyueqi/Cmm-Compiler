@@ -2,6 +2,7 @@
 #define __TRAN__
 
 #include"common.h"
+#include"Seman.h"
 typedef struct Operand_* Operand;
 
 struct Operand_
@@ -30,7 +31,7 @@ struct InterCode
 		struct {Operand x;} gotolabel;
 		struct {Operand x, y, z , relop;} relopgoto;
 		struct {Operand x;} ret;
-		struct {Operand x ,  size;} dec;
+		struct {Operand x ; int size;} dec;
 		struct {Operand x;} arg;
 		struct {Operand x , f;} callfunc;
 		struct {Operand x;} param;
@@ -114,5 +115,15 @@ void translate_dec(struct tree_node*);
 
 void translate_args(struct tree_node* , struct Arg**);
 
+void translate_varlist(struct tree_node*);
+
+void translate_paramdec(struct tree_node*);
+
+void translate_vardec(struct tree_node*);
+
 void optimize();
+
+int get_size_type(Type type);
+
+int get_size_structure(FieldList fieldlist);
 #endif

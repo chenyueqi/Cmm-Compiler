@@ -54,7 +54,24 @@ int lookup_idtable(char* name)
 				return IdTable[i].var_no;
 			}
 		}
+	}
+	return -1;
+}
 
+int lookup_idtable_rank(char* name)
+{
+	int i = 0;
+	for(; i < 100 ; i++)
+	{
+		if(IdTable[i].valid == 1)
+		{
+			if(!strcmp(IdTable[i].Id_name , name))
+			{
+				if(IdTable[i].var_no == 0)
+					IdTable[i].var_no = ++variable_num;
+				return i;
+			}
+		}
 	}
 	return -1;
 }

@@ -80,6 +80,7 @@ void outputoperand(Operand op , FILE* des)
 		case CONSTANT:	fprintf(des , "#%d" , op->u.value);break;
 		case FUNC:	fprintf(des , "%s" , op->u.func_name);break;
 		case LABEL_SIGN:fprintf(des , "label%d" , op->u.label_no);break;
+		case ADDRESS:	fprintf(des , "&v%d" , op->u.var_no);break;
 	}
 }
 
@@ -146,13 +147,18 @@ void outputreturn(struct InterCodes* intercode_p , FILE* des)
 
 void outputdec(struct InterCodes* intercode_p , FILE* des)
 {
-
+	fprintf(des , "DEC ");
+	outputoperand(intercode_p->code.u.dec.x , des);
+	fprintf(des , " %d " , intercode_p->code.u.dec.size);
+	fprintf(des , "\n");
 }
 
 
 void outputarg(struct InterCodes* intercode_p , FILE* des)
 {
-
+	fprintf(des , "ARG ");
+	outputoperand(intercode_p->code.u.arg.x , des);
+	fprintf(des , "\n");
 }
 
 void outputcallfunc(struct InterCodes* intercode_p , FILE* des)
@@ -165,7 +171,9 @@ void outputcallfunc(struct InterCodes* intercode_p , FILE* des)
 
 void outputparam(struct InterCodes* intercode_p , FILE* des)
 {
-	
+	fprintf(des , "PARAM ");
+	outputoperand(intercode_p->code.u.param.x , des);
+	fprintf(des , "\n");
 }
 
 void outputread(struct InterCodes* intercode_p , FILE* des)
@@ -177,7 +185,9 @@ void outputread(struct InterCodes* intercode_p , FILE* des)
 
 void outputwrite(struct InterCodes* intercode_p , FILE* des)
 {
-	
+	fprintf(des , "WRITE ");
+	outputoperand(intercode_p->code.u.write.x , des);
+	fprintf(des , "\n");
 }
 
 void initial_InterCodes()
@@ -244,7 +254,6 @@ void translate(struct tree_node* p)
 
 /*	else if(!strcmp(p->token_name , "Exp"))
 	{
-		fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 		Operand op1;
 		op1 = (Operand)malloc(sizeof(struct Operand_));
 		translate_exp(p, op1);
@@ -252,7 +261,6 @@ void translate(struct tree_node* p)
 	}
 	else if(!strcmp(p->token_name , "Stmt"))
 	{
-		fprintf(stderr , "%s %d\n" , __FILE__ , __LINE__);
 		translate_stmt(p);
 		return;
 	}
@@ -268,10 +276,9 @@ void translate(struct tree_node* p)
 			translate(p->children[i]);
 		return;
 	}
-
 }
 
-void translate_function(struct tree_node* p)
+void translate_function(struct tree_node* p)//FunDec->ID LP VarList RP
 {
 	char* func_name = p->children[0]->unit_name;
 	struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
@@ -281,6 +288,9 @@ void translate_function(struct tree_node* p)
 	new_code->code.u.function.f->u.func_name = (char*)malloc(sizeof(char) * (strlen(func_name) + 1));
 	strcpy(new_code->code.u.function.f->u.func_name , func_name);
 	insertcode(new_code);
+
+	if(p->children_num == 4)
+		translate_varlist(p->children[2]);
 	return;
 }
 
@@ -317,8 +327,12 @@ void translate_exp(struct tree_node* p , Operand place)
 
 			Operand right;
 			right = (Operand)malloc(sizeof(struct Operand_));
-			right->kind = VARIABLE;
-			right->u.var_no = lookup_idtable(p->children[0]->unit_name);
+			int rank = lookup_idtable_rank(p->children[0]->unit_name);
+			if(IdTable[rank].type->kind == STRUCT && IdTable[rank].param_or_not != 1)// 如果ID是一个结构体，并且不是当前函数的参数
+				right->kind = ADDRESS;
+			else
+				right->kind = VARIABLE;
+			right->u.var_no = IdTable[rank].var_no;
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
@@ -469,6 +483,10 @@ here:
 		}
 		else if(!strcmp(p->children[1]->token_name , "DOT"))//Exp -> Exp DOT ID
 		{
+			Operand op1;
+			op1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p->children[0], op1);
+			/*TODO*/
 
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP RP
@@ -712,6 +730,7 @@ void translate_stmt(struct tree_node* p)
 			label2->u.label_no = ++label_num;
 
 			translate_cond(p->children[2] , label1 , label2);
+
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = LABEL;
@@ -787,7 +806,7 @@ void translate_stmt(struct tree_node* p)
 		label3->u.label_no = ++label_num;
 		
 		//code1
-		translate_cond(p->children[2] , label2 , label3);
+		translate_cond(p->children[2] , label1 , label2);
 
 		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 		new_code = (struct  InterCodes*)malloc(sizeof(struct InterCodes));
@@ -822,7 +841,7 @@ void translate_stmt(struct tree_node* p)
 		return;
 }
 
-void translate_compst(struct tree_node* p)
+void translate_compst(struct tree_node* p)//LC DefList StmtList RC
 {
 	translate_deflist(p->children[1]);
 	translate_stmtlist(p->children[2]);
@@ -830,9 +849,9 @@ void translate_compst(struct tree_node* p)
 
 void translate_deflist(struct tree_node* p)
 {
-	if(p == NULL)
+	if(p == NULL)//DefList -> e
 		return ;
-	else
+	else//DefList -> Def DefList
 	{
 		translate_def(p->children[0]);
 		translate_deflist(p->children[1]);
@@ -854,18 +873,18 @@ void translate_stmtlist(struct tree_node* p)
 
 void translate_def(struct tree_node* p)
 {
-	translate_declist(p->children[1]);
+	translate_declist(p->children[1]);//Def -> Specifier DecList SEMI
 }
 
 void translate_declist(struct tree_node* p)
 {
-	if(p->children_num == 1)
+	if(p->children_num == 1)//DecList -> Dec
 	{
 		translate_dec(p->children[0]);
 		return;
 
 	}
-	else if(p->children_num == 3)
+	else if(p->children_num == 3)//DecList -> Dec COMMA DecList
 	{
 		translate_dec(p->children[0]);
 		translate_declist(p->children[2]);
@@ -877,8 +896,28 @@ void translate_declist(struct tree_node* p)
 
 void translate_dec(struct tree_node* p)
 {
-	if(p->children_num == 1)
-		return;
+	if(p->children_num == 1)//Dec -> VarDec
+	{
+		char* id_name = p->children[0]->children[0]->unit_name;
+		int rank = lookup_idtable_rank(id_name);
+		if(IdTable[rank].type->kind == STRUCT)// judge the type of VarDec
+		{
+			int size = get_size_type(IdTable[rank].type);
+			Operand place = (Operand)malloc(sizeof(struct Operand_));
+			place->kind = VARIABLE;
+			place->u.var_no = IdTable[rank].var_no;
+
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = DEC;
+			new_code->code.u.dec.x = place;
+			new_code->code.u.dec.size = size;
+
+			insertcode(new_code);
+			return;
+		}
+		else
+			return;
+	}
 	else if(p->children_num == 3)// Dec -> VarDec ASSIGNOP Exp
 	{
 
@@ -905,8 +944,10 @@ void translate_dec(struct tree_node* p)
 
 void translate_args(struct tree_node* p , struct Arg** arg_list)
 {
+
 	Operand t1 = (Operand)malloc(sizeof(struct Operand_));
 	translate_exp(p->children[0] , t1);
+	/*参数是结构体的情况交给translate_exp来考虑*/
 
 	if(&arg_list == NULL)
 	{
@@ -925,4 +966,70 @@ void translate_args(struct tree_node* p , struct Arg** arg_list)
 		translate_args(p->children[2] , arg_list);
 	else 
 		return;
+}
+
+void translate_varlist(struct tree_node* p)
+{
+	translate_paramdec(p->children[0]);
+	if(p->children_num == 3)//VarList -> ParamDec COMMA VarList
+	{
+		translate_varlist(p->children[2]);
+	}
+}
+
+void translate_paramdec(struct tree_node* p)
+{
+	translate_vardec(p->children[1]);//ParamDec -> Specifier VarDec
+}
+
+void translate_vardec(struct tree_node* p)//only used in paramdec
+{
+	if(p->children_num == 4)//VarDec -> VarDec LB INT RB
+	{
+		fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+		exit(1);
+	}
+	else
+	{
+		Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+		int rank = lookup_idtable_rank(p->children[0]->unit_name);
+		if(IdTable[rank].type->kind == STRUCT)// judge the type of param
+			IdTable[rank].param_or_not = 1;//作为参数传入的结构体变量是地址,把他当作变量来看
+		t1->kind = VARIABLE;
+		t1->u.var_no = IdTable[rank].var_no;
+
+		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = PARAM;
+		new_code->code.u.param.x = t1;
+		insertcode(new_code);
+	}
+}
+
+int get_size_type(Type type)
+{
+	int sum_size = 0;
+	if(type->kind == BASIC)
+		sum_size += 4;
+	else if(type->kind == ARRAY)
+	{
+		fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+		exit(1);
+	}
+	else if(type->kind == STRUCT)
+		sum_size += get_size_structure(type->u.structure);
+	else
+		return 0;
+	return sum_size;
+}
+
+int get_size_structure(FieldList fieldlist)
+{
+	int sum_size = 0;
+	FieldList field = fieldlist;
+	while(field != NULL)
+	{
+		sum_size += get_size_type(field->type);
+		field = field->next;
+	}
+	return sum_size;
 }

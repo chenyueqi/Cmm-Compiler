@@ -1,8 +1,9 @@
 FUNCTION test :
+PARAM v1
 t1 := #1
 t2 := #0
-IF t1 > t2 GOTO label2
-GOTO label3
+IF t1 > t2 GOTO label1
+GOTO label2
 LABEL label1 :
 t3 := #0
 RETURN t3
@@ -12,11 +13,16 @@ t4 := #1
 RETURN t4
 LABEL label3 :
 FUNCTION main :
+DEC v3 8 
 t5 := #1
-v1 := t5
+v4 := t5
 READ t6
 v2 := t6
-t7 := CALL test
-v1 := t7
-t8 := v2
-RETURN t8
+t7 := &v3
+ARG t7
+t8 := CALL test
+v4 := t8
+t9 := v4
+WRITE t9
+t10 := v2
+RETURN t10

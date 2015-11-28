@@ -1,4 +1,10 @@
-int test()
+struct Operands
+{
+	int o1;
+	int o2;
+};
+
+int test(struct Operands op1 )
 {
 	if(1 > 0)
 		return 0;
@@ -9,8 +15,10 @@ int test()
 int main()
 {
 	int n;
+	struct Operands op;
 	int x = 1;
 	n = read();
-	x = test();
+	x = test(op);
+	write(x);
 	return n;
 }

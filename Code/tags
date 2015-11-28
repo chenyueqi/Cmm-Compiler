@@ -15,6 +15,7 @@ ASSIGN	translate.h	/^	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , 
 ASSIGNOP	syntax.tab.c	/^    ASSIGNOP = 263,$/;"	e	enum:yytokentype	file:
 ASSIGNOP	syntax.tab.h	/^    ASSIGNOP = 263,$/;"	e	enum:yytokentype
 ASSIGN_REF	translate.h	/^	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN , DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;$/;"	e	enum:InterCode::__anon6
+Arg	translate.h	/^struct Arg$/;"	s
 Args	syntax.y	/^Args : Exp COMMA Args {$$ = creat_node(3 , "Exp" , &@$ ,  $1 , $2 , $3);}	$/;"	l
 BASIC	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	e	enum:Type_::__anon1
 BEGIN	lex.yy.c	126;"	d	file:
@@ -435,11 +436,14 @@ last_line	syntax.tab.h	/^  int last_line;$/;"	m	struct:YYLTYPE
 lineno	Seman.h	/^	int lineno;$/;"	m	struct:FieldList_
 lineno	common.h	/^	int lineno;$/;"	m	struct:tree_node
 lineno	lex.yy.c	/^		int lineno;$/;"	m	struct:tree_node	file:
-lookup	IdTable.c	/^int lookup(char* name)$/;"	f
+lookup_functable	FuncTable.c	/^struct CharactInfoEntry_Func* lookup_functable(char* func_name)$/;"	f
+lookup_idtable	IdTable.c	/^int lookup_idtable(char* name)$/;"	f
 main	main.c	/^int main(int argc , char** argv)$/;"	f
 name	Seman.h	/^	char* name;$/;"	m	struct:FieldList_
 next	Seman.h	/^	FieldList next;$/;"	m	struct:FieldList_
+next	translate.h	/^	struct Arg* next;$/;"	m	struct:Arg	typeref:struct:Arg::Arg
 next	translate.h	/^	struct InterCodes* next;$/;"	m	struct:InterCodes	typeref:struct:InterCodes::InterCodes
+op	translate.h	/^	Operand op;$/;"	m	struct:Arg
 optimize	optimize.c	/^void optimize()$/;"	f
 out_file	translate.c	6;"	d	file:
 outputInterCode	translate.c	/^void outputInterCode()$/;"	f
@@ -481,11 +485,20 @@ temp_num	translate.h	/^int temp_num;$/;"	v
 token_name	common.h	/^	char* token_name;$/;"	m	struct:tree_node
 token_name	lex.yy.c	/^		char *token_name;$/;"	m	struct:tree_node	file:
 translate	translate.c	/^void translate(struct tree_node* p)$/;"	f
-translate_compst	translate.c	/^void translate_compst(struct tree_node* p)$/;"	f
+translate_args	translate.c	/^void translate_args(struct tree_node* p , struct Arg** arg_list)$/;"	f
+translate_compst	translate.c	/^void translate_compst(struct tree_node* p)\/\/LC DefList StmtList RC$/;"	f
 translate_cond	translate.c	/^void translate_cond(struct tree_node* p , Operand label_true , Operand label_false)$/;"	f
+translate_dec	translate.c	/^void translate_dec(struct tree_node* p)$/;"	f
+translate_declist	translate.c	/^void translate_declist(struct tree_node* p)$/;"	f
+translate_def	translate.c	/^void translate_def(struct tree_node* p)$/;"	f
+translate_deflist	translate.c	/^void translate_deflist(struct tree_node* p)$/;"	f
 translate_exp	translate.c	/^void translate_exp(struct tree_node* p , Operand place)$/;"	f
-translate_function	translate.c	/^void translate_function(struct tree_node* p)$/;"	f
+translate_function	translate.c	/^void translate_function(struct tree_node* p)\/\/FunDec->ID LP VarList RP$/;"	f
+translate_paramdec	translate.c	/^void translate_paramdec(struct tree_node* p)$/;"	f
 translate_stmt	translate.c	/^void translate_stmt(struct tree_node* p)$/;"	f
+translate_stmtlist	translate.c	/^void translate_stmtlist(struct tree_node* p)$/;"	f
+translate_vardec	translate.c	/^void translate_vardec(struct tree_node* p)$/;"	f
+translate_varlist	translate.c	/^void translate_varlist(struct tree_node* p)$/;"	f
 tree_node	common.h	/^struct tree_node$/;"	s
 tree_node	lex.yy.c	/^	struct tree_node$/;"	s	file:
 type	IdTable.h	/^	Type type;$/;"	m	struct:CharactInfoEntry_Id
