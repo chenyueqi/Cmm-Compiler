@@ -3,6 +3,7 @@
 
 #include"common.h"
 #include"Seman.h"
+#include"optimize.h"
 typedef struct Operand_* Operand;
 
 struct Operand_
@@ -120,8 +121,6 @@ void translate_varlist(struct tree_node*);
 void translate_paramdec(struct tree_node*);
 
 void translate_vardec(struct tree_node*);
-
-void optimize();
 
 int get_size_type(Type type);
 

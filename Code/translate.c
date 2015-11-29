@@ -323,23 +323,27 @@ void translate_exp(struct tree_node* p , Operand place)
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID
 		{
-			place->kind = TEMP;
-			place->u.temp_no = ++temp_num;
 
-			Operand right;
-			right = (Operand)malloc(sizeof(struct Operand_));
 			int rank = lookup_idtable_rank(p->children[0]->unit_name);
 			if(IdTable[rank].type->kind == STRUCT && IdTable[rank].param_or_not != 1)// 如果ID是一个结构体，并且不是当前函数的参数
-				right->kind = ADDRESS;
-			else
-				right->kind = VARIABLE;
-			right->u.var_no = IdTable[rank].var_no;
-			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
-			new_code->code.kind = ASSIGN;
-			new_code->code.u.assignop.x = place;
-			new_code->code.u.assignop.y = right;
-			insertcode(new_code);
+			{
+				place->kind = TEMP;
+				place->u.temp_no = ++temp_num;
 
+				Operand right = (Operand)malloc(sizeof(struct Operand_));
+				right->kind = ADDRESS;
+				right->u.var_no = IdTable[rank].var_no;
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = ASSIGN;
+				new_code->code.u.assignop.x = place;
+				new_code->code.u.assignop.y = right;
+				insertcode(new_code);
+			}
+			else
+			{
+				place->kind = VARIABLE;
+				place->u.var_no = IdTable[rank].var_no;
+			}
 			return;
 		}
 		else
@@ -384,15 +388,17 @@ void translate_exp(struct tree_node* p , Operand place)
 		{
 			char* id_name = p->children[0]->children[0]->unit_name;
 			int var_no = lookup_idtable(id_name);
+
 			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
-			translate_exp(p->children[2] , t1);
+			translate_exp(p->children[0] , t1);
 
 			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
-			translate_exp(p->children[0] , t2);
+			translate_exp(p->children[2] , t2);
+
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
-			new_code->code.u.assignop.x = t2;
-			new_code->code.u.assignop.y = t1;
+			new_code->code.u.assignop.x = t1;
+			new_code->code.u.assignop.y = t2;
 			insertcode(new_code);
 
 			place->kind = TEMP;
@@ -400,7 +406,7 @@ void translate_exp(struct tree_node* p , Operand place)
 			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
-			new_code->code.u.assignop.y = t1;//根据经验，使用后面的一个优化更加方便
+			new_code->code.u.assignop.y = t2;//根据经验，使用后面的一个优化更加方便
 			insertcode(new_code);
 			return;
 		}
@@ -525,7 +531,6 @@ here:
 				new_code->code.u.read.x = place;
 				insertcode(new_code);
 				return;
-
 			}
 			else
 			{
@@ -546,6 +551,11 @@ here:
 			}
 
 
+		}
+		else if(!strcmp(p->children[0]->token_name , "LP"))
+		{
+			translate_exp(p->children[1] , place);
+			return;
 		}
 		else 
 			return;
@@ -1151,7 +1161,6 @@ FieldList translate_exp_dot_id(struct tree_node* p , Operand place , int* size)
 				(*size) = (*size) + get_size_type(subfield->type);
 			subfield = subfield->next;
 		}
-		fprintf(stderr , "%d\n" , *size);
 		return subfield;
 	}
 	else//Exp -> ID

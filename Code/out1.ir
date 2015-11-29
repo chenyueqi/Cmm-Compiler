@@ -1,55 +1,26 @@
-FUNCTION test :
+FUNCTION add :
 PARAM v1
-t1 := #1
-t2 := #0
-IF t1 > t2 GOTO label1
-GOTO label2
-LABEL label1 :
-t3 := #0
+t1 := v1 + #0
+t2 := v1 + #4
+t3 := *t1 + *t2
 RETURN t3
-GOTO label3
-LABEL label2 :
-t4 := #1
-RETURN t4
-LABEL label3 :
 FUNCTION main :
 DEC v3 8 
-DEC v4 40 
-t5 := #1
-v5 := t5
-t6 := #10
-t9 := #1
-t7 := t9 * #4
-t8 := &v4 + t7
-*t8 := t6
-t10 := t6
-t11 := #20
+t4 := &v3
+t5 := t4 + #0
+t6 := #1
+*t5 := t6
+t7 := t6
+t8 := &v3
+t9 := t8 + #4
+t10 := #2
+*t9 := t10
+t11 := t10
 t12 := &v3
-t13 := t12 + #0
-*t13 := t11
-t14 := t11
-t15 := #100
-t16 := &v3
-t17 := t16 + #4
-*t17 := t15
-t18 := t15
-t21 := v5
-t19 := t21 * #4
-t20 := &v4 + t19
-t22 := v6
-t22 := *t20
-t23 := *t20
-READ t24
-t25 := v2
-t25 := t24
-t26 := t24
-t27 := &v3
-ARG t27
-t28 := CALL test
-t29 := v5
-t29 := t28
-t30 := t28
-t31 := v5
-WRITE t31
-t32 := v2
-RETURN t32
+ARG t12
+t13 := CALL add
+v2 := t13
+t14 := t13
+WRITE v2
+t15 := #0
+RETURN t15

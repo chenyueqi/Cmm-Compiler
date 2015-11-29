@@ -3,4 +3,10 @@
 
 #include"translate.h"
 
+void optimize();
+
+void optimize_level1();
+
+void optimize_level2();
+
 #endif
