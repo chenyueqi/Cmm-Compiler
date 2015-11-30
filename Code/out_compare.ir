@@ -1,7 +1,9 @@
 FUNCTION fact :
 PARAM v1
 t1 := #1
-IF v1 != t1 GOTO label2
+IF v1 == t1 GOTO label1
+GOTO label2
+LABEL label1 :
 RETURN v1
 GOTO label3
 LABEL label2 :
@@ -17,7 +19,9 @@ READ t6
 v2 := t6
 t7 := t6
 t8 := #1
-IF v2 <= t8 GOTO label5
+IF v2 > t8 GOTO label4
+GOTO label5
+LABEL label4 :
 ARG v2
 t9 := CALL fact
 v3 := t9

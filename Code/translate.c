@@ -5,6 +5,8 @@
 
 #define out_file "out1.ir"
 
+#define OPT
+
 void pre_occupy_func()
 {
 	Type return_type = (Type)malloc(sizeof(struct Type_));
@@ -36,8 +38,9 @@ void outputInterCode()
 		perror(out_file);
 		return;
 	}
-
+#ifdef OPT
 	optimize();
+#endif
 
 	struct InterCodes* intercode_p = code_head;
 	while(intercode_p->next != code_head)
