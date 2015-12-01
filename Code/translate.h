@@ -3,7 +3,8 @@
 
 #include"common.h"
 #include"Seman.h"
-#include"optimize.h"
+//#include"optimize.h"
+
 typedef struct Operand_* Operand;
 
 struct Operand_

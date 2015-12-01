@@ -5,7 +5,7 @@
 
 #define out_file "out1.ir"
 
-#define OPT
+extern void optimize();
 
 void pre_occupy_func()
 {
@@ -38,9 +38,7 @@ void outputInterCode()
 		perror(out_file);
 		return;
 	}
-#ifdef OPT
 	optimize();
-#endif
 
 	struct InterCodes* intercode_p = code_head;
 	while(intercode_p->next != code_head)
@@ -304,7 +302,7 @@ void translate_exp(struct tree_node* p , Operand place)
 	{
 		if(!strcmp(p->children[0]->token_name , "INT"))//Exp -> INT
 		{
-			place->kind = TEMP;
+/*			place->kind = TEMP;
 			place->u.temp_no = ++temp_num;
 
 			Operand right;
@@ -318,6 +316,9 @@ void translate_exp(struct tree_node* p , Operand place)
 
 			insertcode(new_code);
 			return;
+*/
+			place->kind = CONSTANT;
+			place->u.value = atoi(p->children[0]->unit_name);
 		}
 		else if(!strcmp(p->children[0]->token_name , "FLOAT"))//Exp -> FLOAT
 		{
@@ -409,7 +410,7 @@ void translate_exp(struct tree_node* p , Operand place)
 			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
-			new_code->code.u.assignop.y = t2;//根据经验，使用后面的一个优化更加方便
+			new_code->code.u.assignop.y = t1;//根据经验，使用后面的一个优化更加方便
 			insertcode(new_code);
 			return;
 		}

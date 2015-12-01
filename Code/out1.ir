@@ -1,33 +1,16 @@
-FUNCTION fact :
-PARAM v1
-t1 := #1
-IF v1 != t1 GOTO label2
-RETURN v1
+FUNCTION main :
+READ t1
+v1 := t1
+IF v1 <= #0 GOTO label2
+WRITE #1
 GOTO label3
 LABEL label2 :
-t2 := #1
-t3 := v1 - t2
-ARG t3
-t4 := CALL fact
-t5 := v1 * t4
-RETURN t5
-LABEL label3 :
-FUNCTION main :
-READ t6
-v2 := t6
-t7 := t6
-t8 := #1
-IF v2 <= t8 GOTO label5
-ARG v2
-t9 := CALL fact
-v3 := t9
-t10 := t9
+IF v1 >= #0 GOTO label5
+t3 := #0 - #1
+WRITE t3
 GOTO label6
 LABEL label5 :
-t11 := #1
-v3 := t11
-t12 := t11
+WRITE #0
 LABEL label6 :
-WRITE v3
-t13 := #0
-RETURN t13
+LABEL label3 :
+RETURN #0

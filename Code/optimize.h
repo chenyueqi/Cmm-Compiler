@@ -7,8 +7,12 @@ struct basic_block
 {
 	struct InterCodes* begin;
 	struct InterCodes* end;
+	struct basic_block* prev;
 	struct basic_block* next;
 };
+
+struct basic_block* current_basic_block;
+struct basic_block* basic_block_head;
 
 int change_relop(int );
 
@@ -16,17 +20,17 @@ void optimize();
 
 void optimize_before_divide();
 
-void optimize_level2();
+void optimize_level1();
 
 void get_basic_block();
 
-int leader_buffer[30];//首指令的序号，从1开始
+void initial_basic_block();
 
-void fill_leader_buffer();
+void insert_basic_block(struct InterCodes* , struct InterCodes*);
 
-int get_label_num(Operand op);
+void do_level2_optimize(struct basic_block*);
 
-int is_label_in_use(Operand op);
+struct InterCodes* try_to_delete_death(struct InterCodes* , struct InterCodes*);
 
-
+int is_used_operand(Operand x , Operand y);
 #endif
