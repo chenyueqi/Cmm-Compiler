@@ -51,6 +51,9 @@ void optimize_before_divide()//在基本块分割之前对于一些条件判断�
 				deletecode(second_code);
 				current_code = current_code->next->next;
 			}
+			else
+				current_code = current_code->next;
+
 		}
 		else
 			current_code = current_code->next;

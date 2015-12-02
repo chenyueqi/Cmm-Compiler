@@ -1,0 +1,52 @@
+struct HouseGuest{
+	int strength;
+	int EQ;
+};
+
+int HOHCompetition(struct HouseGuest h1, struct HouseGuest h2)
+{
+	int HOH = 0;
+	if (h1.strength > h2.strength)
+		HOH = 1;
+	if (h1.strength < h2.strength)
+		HOH = 2;
+	if (h1.strength == h2.strength){
+		if (h1.EQ > h2.EQ)
+			HOH = 1;
+		if (h1.EQ < h2.EQ)
+			HOH = 2;
+		if (h1.EQ == h2.EQ)
+			HOH = 1;
+	}
+	return HOH;
+}
+
+struct HouseGuestA{
+	int strength1;
+	int EQ1;
+	int age;
+};
+
+int main()
+{
+	struct HouseGuest Clay;
+	struct HouseGuest James;
+	int Head = 1;
+	int a[5] , b[5];
+	int power = 100;
+	int idiot = 0;
+	int i = 0;
+	while (i < 5) {
+		Clay.strength = a[i];
+		Clay.EQ = idiot;
+		James.strength = power;
+		James.EQ = b[i];
+		i = i + 1;
+	}
+	if (HOHCompetition(James, Clay) == 1)
+		Head = 1;
+	else if (HOHCompetition(James, Clay) == 2)
+		Head = 1;
+	else Head = 1;
+	return 1;
+}

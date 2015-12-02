@@ -127,6 +127,6 @@ int get_size_type(Type type);
 
 int get_size_structure(FieldList fieldlist);
 
-FieldList translate_exp_dot_id(struct tree_node* , Operand , int*);
+FieldList translate_exp_dot_id(struct tree_node* , Operand);
 
 #endif

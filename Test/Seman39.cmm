@@ -1,0 +1,36 @@
+struct Human{
+	int age;
+	int weight;
+} p1;
+
+struct{
+	int old ;
+	int overweight;
+} p2;
+
+struct Male{int age1 , weight1;} test()
+{
+	struct Male p3;
+	p3.age1 = 20;
+	p3.weight1 = 65;
+	return p3;
+}
+
+int test2(struct Female {int age3, weight3;} p4)
+{
+	struct Female p5 = p4;
+	return p5.age3 + p5.age3;
+}
+
+float main()
+{
+	int a[10], b[10];
+	int i = 0;
+	while (i < 10) {
+		struct {int age4, weight4;} p6;
+		p6.age4 = i + 70;
+		p6.weight4 = i * 5 + 18;
+		i = i + 1;
+	}
+	return 1.0;
+}

@@ -501,26 +501,20 @@ here:
 		{
 			Operand op1;
 			op1 = (Operand)malloc(sizeof(struct Operand_));
-			int size = 0;
-			translate_exp_dot_id(p , op1 , &size);
+			translate_exp_dot_id(p , op1);
 
-			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
-			t1->kind = CONSTANT;
-			t1->u.value = size;
-
-			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
-			t2->kind = TEMP;
-			t2->u.temp_no = ++ temp_num;
+			Operand op2 = (Operand)malloc(sizeof(struct Operand_));
+			op2->kind = TEMP;
+			op2->u.temp_no = ++temp_num;
 
 			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
-			new_code->code.kind = ADD;
-			new_code->code.u.alop.x = t2;
-		        new_code->code.u.alop.y = op1;
-			new_code->code.u.alop.z = t1;	
+			new_code->code.kind = ASSIGN;
+			new_code->code.u.assignop.x = op2;
+			new_code->code.u.assignop.y = op1;
 			insertcode(new_code);
 
 			place->kind = READ_ADDRESS;	
-			place->u.temp_no = t2->u.temp_no;
+			place->u.temp_no = op2->u.temp_no;
 		}
 		else if(!strcmp(p->children[0]->token_name , "ID"))//Exp -> ID LP RP
 		{
@@ -569,9 +563,49 @@ here:
 	{
 		if(!strcmp(p->children[1]->token_name , "LB"))//Exp -> Exp LB Exp RB
 		{
-			if(strcmp(p->children[0]->children[0]->token_name , "ID"))//第一个Exp 应该是ID，似乎不需要判断
+			if(!strcmp(p->children[0]->children[0]->token_name , "Exp"))//第一个Exp有可能是结构体
 			{
-				fprintf(stderr , "Cannot translate: Code contains variables or multi-dimensional array type or parameters of array type.\n");
+				Operand op = (Operand)malloc(sizeof(struct Operand_));	
+				translate_exp(p->children[0] , op);
+				op->kind = TEMP;
+
+				Operand t1 = (Operand)malloc(sizeof(struct Operand_));	
+
+				Operand t2 = (Operand)malloc(sizeof(struct Operand_));	
+				t2->kind = TEMP;
+				t2->u.temp_no = ++temp_num;
+
+				Operand t3 = (Operand)malloc(sizeof(struct Operand_));	
+				t3->kind = TEMP;
+				t3->u.temp_no = ++temp_num;
+
+				char* name = p->children[0]->children[2]->unit_name;
+				int rank = lookup_idtable_rank(name);
+				int size = get_size_type(IdTable[rank].type->u.array.elem);
+
+				translate_exp(p->children[2] , t1);
+
+
+				Operand t4 = (Operand)malloc(sizeof(struct Operand_));
+				t4->kind = CONSTANT;
+				t4->u.value = size;
+
+				struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = MUL;
+				new_code->code.u.alop.x = t2;
+				new_code->code.u.alop.y = t1;
+				new_code->code.u.alop.z = t4;
+				insertcode(new_code);
+
+				new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+				new_code->code.kind = ADD;
+				new_code->code.u.alop.x = t3;
+				new_code->code.u.alop.y = op;
+				new_code->code.u.alop.z = t2;
+				insertcode(new_code);
+
+				place->kind = READ_ADDRESS;
+				place->u.temp_no = t3->u.temp_no;
 				return;
 			}
 			else
@@ -1151,26 +1185,82 @@ int get_size_structure(FieldList fieldlist)
 	return sum_size;
 }
 
-FieldList translate_exp_dot_id(struct tree_node* p , Operand place , int* size)
+FieldList translate_exp_dot_id(struct tree_node* p , Operand place)
 {
 	FieldList subfield = NULL;
 	if(p->children_num == 3)//Exp -> Exp DOT ID
 	{
-		subfield = translate_exp_dot_id(p->children[0] , place , size);
+		int size = 0;
+		Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+		subfield = translate_exp_dot_id(p->children[0] , t2);
 		while(subfield != NULL)
 		{
 			if(!strcmp(subfield->name , p->children[2]->unit_name))
 				break;
 			else
-				(*size) = (*size) + get_size_type(subfield->type);
+				size = size + get_size_type(subfield->type);
 			subfield = subfield->next;
 		}
+		
+		Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+		t1->kind = CONSTANT;
+		t1->u.value = size;
+
+		struct InterCodes* new_code = (struct InterCodes* )malloc(sizeof(struct InterCodes));
+		new_code->code.kind = ADD;
+		new_code->code.u.alop.x = place;
+		new_code->code.u.alop.y = t2;
+		new_code->code.u.alop.z = t1;
+		insertcode(new_code);
+
+		return subfield;
+	}
+	else if(p->children_num == 4)//Exp -> Exp LB Exp RB
+	{
+		Operand t0 = (Operand)malloc(sizeof(struct Operand_));
+		subfield = translate_exp_dot_id(p->children[0] , t0);
+		int size = 0;
+		while(subfield != NULL)
+		{
+			if(!strcmp(subfield->name , p->children[2]->unit_name))
+				break;
+			else
+				size = size + get_size_type(subfield->type);
+			subfield = subfield->next;
+		}
+
+		Operand t1 = (Operand)malloc(sizeof(struct Operand_));	
+		translate_exp(p->children[2] , t1);
+
+		Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+		t2->kind = CONSTANT;
+		int rank = lookup_idtable_rank(p->children[0]->children[2]->unit_name);
+		t2->u.value = get_size_type(IdTable[rank].type);
+//		fprintf(stderr , "%s %d %s %d\n" , __FILE__ , __LINE__ ,p->children[0]->children[2]->unit_name ,  t2->u.value);
+
+		Operand t3 = (Operand)malloc(sizeof(struct Operand_));
+		t3->kind = TEMP;
+		t3->u.temp_no = ++temp_num;
+
+		struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = MUL;
+		new_code->code.u.alop.x = t3;
+		new_code->code.u.alop.y = t1;
+		new_code->code.u.alop.z = t2;
+		insertcode(new_code);
+
+		new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+		new_code->code.kind = ADD;
+		new_code->code.u.alop.x = place;
+		new_code->code.u.alop.y = t0;
+		new_code->code.u.alop.z = t3;
+		insertcode(new_code);
+
 		return subfield;
 	}
 	else//Exp -> ID
 	{
 		translate_exp(p , place);
-		*size = 0;
 		int rank = lookup_idtable_rank(p->children[0]->unit_name);
 		Type type = IdTable[rank].type;
 		subfield = type->u.structure;
