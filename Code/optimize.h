@@ -33,4 +33,10 @@ void do_level2_optimize(struct basic_block*);
 struct InterCodes* try_to_delete_death(struct InterCodes* , struct InterCodes*);
 
 int is_used_operand(Operand x , Operand y);
+
+int assign_again(struct InterCodes* , struct InterCodes*);
+
+struct InterCodes* replace(struct InterCodes* , struct InterCodes*);
+
+void lookback_arg(struct InterCodes* , struct InterCodes*);
 #endif

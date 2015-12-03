@@ -390,9 +390,6 @@ void translate_exp(struct tree_node* p , Operand place)
 	{
 		if(!strcmp(p->children[1]->token_name , "ASSIGNOP"))//Exp -> Exp ASSIGNOP Exp
 		{
-			char* id_name = p->children[0]->children[0]->unit_name;
-			int var_no = lookup_idtable(id_name);
-
 			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
 			translate_exp(p->children[0] , t1);
 
@@ -406,7 +403,7 @@ void translate_exp(struct tree_node* p , Operand place)
 			insertcode(new_code);
 
 			place->kind = TEMP;
-			place->u.var_no = ++temp_num;
+			place->u.temp_no = ++temp_num;
 			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 			new_code->code.kind = ASSIGN;
 			new_code->code.u.assignop.x = place;
@@ -1206,6 +1203,9 @@ FieldList translate_exp_dot_id(struct tree_node* p , Operand place)
 		t1->kind = CONSTANT;
 		t1->u.value = size;
 
+		place->kind = TEMP;
+		place->u.temp_no = ++temp_num;
+
 		struct InterCodes* new_code = (struct InterCodes* )malloc(sizeof(struct InterCodes));
 		new_code->code.kind = ADD;
 		new_code->code.u.alop.x = place;
@@ -1236,7 +1236,6 @@ FieldList translate_exp_dot_id(struct tree_node* p , Operand place)
 		t2->kind = CONSTANT;
 		int rank = lookup_idtable_rank(p->children[0]->children[2]->unit_name);
 		t2->u.value = get_size_type(IdTable[rank].type);
-//		fprintf(stderr , "%s %d %s %d\n" , __FILE__ , __LINE__ ,p->children[0]->children[2]->unit_name ,  t2->u.value);
 
 		Operand t3 = (Operand)malloc(sizeof(struct Operand_));
 		t3->kind = TEMP;
@@ -1248,6 +1247,9 @@ FieldList translate_exp_dot_id(struct tree_node* p , Operand place)
 		new_code->code.u.alop.y = t1;
 		new_code->code.u.alop.z = t2;
 		insertcode(new_code);
+
+		place->kind = TEMP;
+		place->u.temp_no = ++temp_num;
 
 		new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
 		new_code->code.kind = ADD;

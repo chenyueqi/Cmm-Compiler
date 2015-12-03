@@ -176,9 +176,16 @@ void do_level2_optimize(struct basic_block* current)
 		}
 		current_code = current_code->next;
 	}
+	current_code = current->begin;
+	while(current_code != end->next)
+	{
+		if(current_code->code.kind == ARG)
+			lookback_arg(current_code, current->begin);
+		current_code = current_code->next;
+	}
 }
 
-struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct InterCodes* end)
+struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct InterCodes* end)//消除死代码
 {
 	Operand x = current_code->code.u.assignop.x;
 	struct InterCodes* code_p = current_code->next;
@@ -225,6 +232,83 @@ int is_used_operand(Operand x , Operand y)
 		else
 			return 0;
 	}
-	
 	return 0;
+}
+
+int assign_again(struct InterCodes* current_code, struct InterCodes* end)//判断是否为后续表达式的左值
+{
+	Operand x = current_code->code.u.assignop.x;
+	struct InterCodes* code_p = current_code->next;
+	int flag = 0;
+	while(code_p != end->next)
+	{
+		switch(code_p->code.kind)
+		{
+			case ASSIGN: if(is_used_operand(code_p->code.u.assignop.x , x)) flag = 1; break;
+			case ADD:
+			case SUB:
+			case MUL:
+			case DIV: if(is_used_operand(code_p->code.u.alop.x , x)) flag = 1; break;
+			case CALLFUNC: if(is_used_operand(code_p->code.u.callfunc.x , x)) flag = 1; break;
+			case WRITE: if(is_used_operand(code_p->code.u.write.x , x)) flag = 1; break; 
+		}
+		code_p = code_p->next;
+	}
+	return flag;
+}
+
+struct InterCodes*  replace(struct InterCodes* current_code , struct InterCodes* end)
+{
+	Operand x = current_code->code.u.assignop.x;
+	Operand y = current_code->code.u.assignop.y;
+	struct InterCodes* code_p = current_code->next;
+	//如果x既不为左值，也不是右值，则在消除死代码的时候已经删除
+	while(code_p != end->next)
+	{
+		switch(code_p->code.kind)
+		{
+			case ASSIGN:
+				if(code_p->code.u.assignop.y == x) code_p->code.u.assignop.y = y;break;
+			case ADD:
+			case SUB:
+			case MUL:
+			case DIV: 
+				if(code_p->code.u.alop.y == x) code_p->code.u.alop.y = y;
+				if(code_p->code.u.alop.z == x) code_p->code.u.alop.z = y;break;
+			case RELOP_GOTO: 
+				if(code_p->code.u.relopgoto.x == x) code_p->code.u.relopgoto.x = y;
+				if(code_p->code.u.relopgoto.y == x) code_p->code.u.relopgoto.y = y;break;
+			case RETURN:
+				if(code_p->code.u.ret.x == x) code_p->code.u.ret.x = y;break;
+			case ARG:
+				if(code_p->code.u.arg.x == x) code_p->code.u.arg.x = y;break;
+			case WRITE:
+				if(code_p->code.u.write.x == x) code_p->code.u.write.x = y;break;	
+
+		}
+		code_p = code_p->next;
+	}
+
+	current_code = current_code->next;
+	deletecode(current_code->prev);
+	return current_code;
+}
+
+void lookback_arg(struct InterCodes* current_code , struct InterCodes* begin)
+{
+	Operand x = current_code->code.u.arg.x;
+	struct InterCodes* code_p = current_code;
+	while(code_p != begin->prev)
+	{
+		if(code_p->code.kind == ASSIGN)
+		{
+			if(code_p->code.u.assignop.x == x)
+			{
+				current_code->code.u.arg.x = code_p->code.u.assignop.y;
+				deletecode(code_p);
+				break;
+			}
+		}	
+		code_p = code_p->prev;
+	}
 }

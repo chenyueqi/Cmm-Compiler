@@ -145,7 +145,6 @@ MUL	translate.h	/^	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD
 NOT	syntax.tab.c	/^    NOT = 272,$/;"	e	enum:yytokentype	file:
 NOT	syntax.tab.h	/^    NOT = 272,$/;"	e	enum:yytokentype
 OBJS	Makefile	/^OBJS = $(CFILES:.c=.o)$/;"	m
-OPT	translate.c	8;"	d	file:
 OR	syntax.tab.c	/^    OR = 270,$/;"	e	enum:yytokentype	file:
 OR	syntax.tab.h	/^    OR = 270,$/;"	e	enum:yytokentype
 Operand	translate.h	/^typedef struct Operand_* Operand;$/;"	t	typeref:struct:Operand_
@@ -380,8 +379,12 @@ alloca	syntax.tab.c	303;"	d	file:
 alop	translate.h	/^		struct {Operand x, y, z;} alop;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon10
 arg	translate.h	/^		struct {Operand x;} arg;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon16
 array	Seman.h	/^		struct{Type elem; int size;}array;$/;"	m	union:Type_::__anon2	typeref:struct:Type_::__anon2::__anon3
+assign_again	optimize.c	/^int assign_again(struct InterCodes* current_code, struct InterCodes* end)\/\/判断是否为后续表达式的左值$/;"	f
 assignop	translate.h	/^		struct {Operand x , y;} assignop;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon11
 basic	Seman.h	/^		int basic;\/\/if Int basic = 0 , if Float basic = 1$/;"	m	union:Type_::__anon2
+basic_block	optimize.h	/^struct basic_block$/;"	s
+basic_block_head	optimize.h	/^struct basic_block* basic_block_head;$/;"	v	typeref:struct:basic_block
+begin	optimize.h	/^	struct InterCodes* begin;$/;"	m	struct:basic_block	typeref:struct:basic_block::InterCodes
 bool	Seman.h	/^typedef enum Bool bool;$/;"	t	typeref:enum:Bool
 callfunc	translate.h	/^		struct {Operand x , f;} callfunc;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon17
 change_relop	optimize.c	/^int change_relop(int origin)$/;"	f
@@ -393,18 +396,20 @@ code	translate.h	/^	struct InterCode code;$/;"	m	struct:InterCodes	typeref:struc
 code_head	translate.h	/^struct InterCodes* code_head;$/;"	v	typeref:struct:InterCodes
 creat_node	main.c	/^struct tree_node* creat_node(int arity , char* token_name , struct YYLTYPE* current_pos, ...)$/;"	f
 creat_node_token	lex.yy.c	/^void creat_node_token(YYSTYPE* yylval , int yylineno , int type , char *token_name , int token_length , char* yytext , int yyleng)$/;"	f
+current_basic_block	optimize.h	/^struct basic_block* current_basic_block;$/;"	v	typeref:struct:basic_block
 current_code	translate.h	/^struct InterCodes* current_code;$/;"	v	typeref:struct:InterCodes
 dec	translate.h	/^		struct {Operand x ; int size;} dec;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon15
 deletecode	optimize.c	/^void deletecode(struct InterCodes* code)$/;"	f
 display_float	main.c	/^void display_float(char* p)$/;"	f
 display_tree	main.c	/^void display_tree(struct tree_node* p , int count)$/;"	f
 distroy_tree	main.c	/^void distroy_tree(struct tree_node* p )$/;"	f
+do_level2_optimize	optimize.c	/^void do_level2_optimize(struct basic_block* current)$/;"	f
 elem	Seman.h	/^		struct{Type elem; int size;}array;$/;"	m	struct:Type_::__anon2::__anon3
+end	optimize.h	/^	struct InterCodes* end;$/;"	m	struct:basic_block	typeref:struct:basic_block::InterCodes
 entry	StructTable.h	/^	FieldList entry;$/;"	m	struct:CharactInfoEntry_Struct
 error_num	syntax.tab.c	/^	unsigned int  error_num = 0;$/;"	v
 f	translate.h	/^		struct {Operand f;} function;$/;"	m	struct:InterCode::__anon7::__anon9
 f	translate.h	/^		struct {Operand x , f;} callfunc;$/;"	m	struct:InterCode::__anon7::__anon17
-fill_leader_buffer	optimize.c	/^void fill_leader_buffer()$/;"	f
 first_column	syntax.tab.c	/^  int first_column;$/;"	m	struct:YYLTYPE	file:
 first_column	syntax.tab.h	/^  int first_column;$/;"	m	struct:YYLTYPE
 first_line	syntax.tab.c	/^  int first_line;$/;"	m	struct:YYLTYPE	file:
@@ -425,14 +430,16 @@ func_name	FuncTable.h	/^	char* func_name;$/;"	m	struct:CharactInfoEntry_Func
 func_name	translate.h	/^		char* func_name;$/;"	m	union:Operand_::__anon5
 function	translate.h	/^		struct {Operand f;} function;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon9
 get_basic_block	optimize.c	/^void get_basic_block()$/;"	f
-get_label_num	optimize.c	/^int get_label_num(Operand op)$/;"	f
 get_relop	translate.c	/^int get_relop(struct tree_node* p )$/;"	f
 get_size_structure	translate.c	/^int get_size_structure(FieldList fieldlist)$/;"	f
 get_size_type	translate.c	/^int get_size_type(Type type)$/;"	f
 gotolabel	translate.h	/^		struct {Operand x;} gotolabel;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon12
 initial_InterCodes	translate.c	/^void initial_InterCodes()$/;"	f
+initial_basic_block	optimize.c	/^void initial_basic_block()$/;"	f
+insert_basic_block	optimize.c	/^void insert_basic_block(struct InterCodes* begin , struct InterCodes* end)$/;"	f
 insertcode	translate.c	/^void insertcode(struct InterCodes* new_code)$/;"	f
 is_label_in_use	optimize.c	/^int is_label_in_use(Operand op)$/;"	f
+is_used_operand	optimize.c	/^int is_used_operand(Operand x , Operand y)$/;"	f
 kind	Seman.h	/^	enum{BASIC , ARRAY , STRUCT} kind;$/;"	m	struct:Type_	typeref:enum:Type_::__anon1
 kind	translate.h	/^	enum {LABEL , FUNCTION , ASSIGN , ADD , SUB , MUL , DIV , ADD_ASSIGN , REF_ASSIGN , ASSIGN_REF , GOTO , RELOP_GOTO  , RETURN , DEC , ARG , CALLFUNC , PARAM , READ , WRITE } kind;$/;"	m	struct:InterCode	typeref:enum:InterCode::__anon6
 kind	translate.h	/^	enum {VARIABLE , CONSTANT , TEMP , ADDRESS , LABEL_SIGN , FUNC , RELOP , READ_ADDRESS} kind;$/;"	m	struct:Operand_	typeref:enum:Operand_::__anon4
@@ -443,7 +450,6 @@ last_column	syntax.tab.c	/^  int last_column;$/;"	m	struct:YYLTYPE	file:
 last_column	syntax.tab.h	/^  int last_column;$/;"	m	struct:YYLTYPE
 last_line	syntax.tab.c	/^  int last_line;$/;"	m	struct:YYLTYPE	file:
 last_line	syntax.tab.h	/^  int last_line;$/;"	m	struct:YYLTYPE
-leader_buffer	optimize.h	/^int leader_buffer[30];\/\/首指令的序号，从1开始$/;"	v
 lineno	Seman.h	/^	int lineno;$/;"	m	struct:FieldList_
 lineno	common.h	/^	int lineno;$/;"	m	struct:tree_node
 lineno	lex.yy.c	/^		int lineno;$/;"	m	struct:tree_node	file:
@@ -453,12 +459,13 @@ lookup_idtable_rank	IdTable.c	/^int lookup_idtable_rank(char* name)$/;"	f
 main	main.c	/^int main(int argc , char** argv)$/;"	f
 name	Seman.h	/^	char* name;$/;"	m	struct:FieldList_
 next	Seman.h	/^	FieldList next;$/;"	m	struct:FieldList_
+next	optimize.h	/^	struct basic_block* next;$/;"	m	struct:basic_block	typeref:struct:basic_block::basic_block
 next	translate.h	/^	struct Arg* next;$/;"	m	struct:Arg	typeref:struct:Arg::Arg
 next	translate.h	/^	struct InterCodes* next;$/;"	m	struct:InterCodes	typeref:struct:InterCodes::InterCodes
 op	translate.h	/^	Operand op;$/;"	m	struct:Arg
 optimize	optimize.c	/^void optimize()$/;"	f
 optimize_before_divide	optimize.c	/^void optimize_before_divide()\/\/在基本块分割之前对于一些条件判断语句做优化和无用label的消除$/;"	f
-optimize_level2	optimize.c	/^void optimize_level2()$/;"	f
+optimize_level1	optimize.c	/^void optimize_level1()$/;"	f
 out_file	translate.c	6;"	d	file:
 outputInterCode	translate.c	/^void outputInterCode()$/;"	f
 output_relop	translate.c	/^void output_relop(Operand op1 , FILE* des)$/;"	f
@@ -483,11 +490,13 @@ param	translate.h	/^		struct {Operand x;} param;$/;"	m	union:InterCode::__anon7	
 param_or_not	IdTable.h	/^	int param_or_not;\/\/ 1 means is param$/;"	m	struct:CharactInfoEntry_Id
 parameter	FuncTable.h	/^	FieldList parameter;$/;"	m	struct:CharactInfoEntry_Func
 pre_occupy_func	translate.c	/^void pre_occupy_func()$/;"	f
+prev	optimize.h	/^	struct basic_block* prev;$/;"	m	struct:basic_block	typeref:struct:basic_block::basic_block
 prev	translate.h	/^	struct InterCodes* prev;$/;"	m	struct:InterCodes	typeref:struct:InterCodes::InterCodes
 read	translate.h	/^		struct {Operand x;} read;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon19
 relop	translate.h	/^		int relop;$/;"	m	union:Operand_::__anon5
 relop	translate.h	/^		struct {Operand x, y, z , relop;} relopgoto;$/;"	m	struct:InterCode::__anon7::__anon13
 relopgoto	translate.h	/^		struct {Operand x, y, z , relop;} relopgoto;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon13
+replace	optimize.c	/^struct InterCodes*  replace(struct InterCodes* current_code , struct InterCodes* end)$/;"	f
 ret	translate.h	/^		struct {Operand x;} ret;$/;"	m	union:InterCode::__anon7	typeref:struct:InterCode::__anon7::__anon14
 return_type	FuncTable.h	/^	Type return_type;$/;"	m	struct:CharactInfoEntry_Func
 root	main.c	/^struct tree_node* root;$/;"	v	typeref:struct:tree_node
@@ -508,7 +517,7 @@ translate_declist	translate.c	/^void translate_declist(struct tree_node* p)$/;"	
 translate_def	translate.c	/^void translate_def(struct tree_node* p)$/;"	f
 translate_deflist	translate.c	/^void translate_deflist(struct tree_node* p)$/;"	f
 translate_exp	translate.c	/^void translate_exp(struct tree_node* p , Operand place)$/;"	f
-translate_exp_dot_id	translate.c	/^FieldList translate_exp_dot_id(struct tree_node* p , Operand place , int* size)$/;"	f
+translate_exp_dot_id	translate.c	/^FieldList translate_exp_dot_id(struct tree_node* p , Operand place)$/;"	f
 translate_function	translate.c	/^void translate_function(struct tree_node* p)\/\/FunDec->ID LP VarList RP$/;"	f
 translate_paramdec	translate.c	/^void translate_paramdec(struct tree_node* p)$/;"	f
 translate_stmt	translate.c	/^void translate_stmt(struct tree_node* p)$/;"	f
@@ -517,6 +526,7 @@ translate_vardec	translate.c	/^void translate_vardec(struct tree_node* p)\/\/onl
 translate_varlist	translate.c	/^void translate_varlist(struct tree_node* p)$/;"	f
 tree_node	common.h	/^struct tree_node$/;"	s
 tree_node	lex.yy.c	/^	struct tree_node$/;"	s	file:
+try_to_delete_death	optimize.c	/^struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct InterCodes* end)\/\/消除死代码$/;"	f
 type	IdTable.h	/^	Type type;$/;"	m	struct:CharactInfoEntry_Id
 type	Seman.h	/^	Type type;$/;"	m	struct:FieldList_
 type	common.h	/^	int type;\/*1:INT FLOAT TYPE ID 2:lexical 3:bison*\/$/;"	m	struct:tree_node
