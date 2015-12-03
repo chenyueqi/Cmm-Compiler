@@ -30,6 +30,8 @@ void insert_basic_block(struct InterCodes* , struct InterCodes*);
 
 void do_level2_optimize(struct basic_block*);
 
+int is_used_operand1(struct InterCodes* current_code , struct InterCodes* end , Operand x);
+
 struct InterCodes* try_to_delete_death(struct InterCodes* , struct InterCodes*);
 
 int is_used_operand(Operand x , Operand y);

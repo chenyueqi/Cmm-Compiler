@@ -183,11 +183,82 @@ void do_level2_optimize(struct basic_block* current)
 			lookback_arg(current_code, current->begin);
 		current_code = current_code->next;
 	}
+	current_code = current->begin;
+	while(current_code != end->next)
+	{
+		if((current_code->code.kind == ADD) || (current_code->code.kind == SUB) || (current_code->code.kind == MUL) || (current_code->code.kind == DIV) )
+		{
+			Operand x = current_code->code.u.alop.x;
+			if(x->kind == TEMP)
+			{
+				if((current_code->next->code.kind == ASSIGN))
+				{
+					Operand y = current_code->next->code.u.assignop.y;
+					if(x == y)
+					{
+						if(!is_used_operand1(current_code->next , end , x))
+						{
+							current_code->code.u.alop.x = current_code->next->code.u.assignop.x;
+							deletecode(current_code->next);
+						}
+					}
+				}
+			}
+		}
+		if(current_code->code.kind == CALLFUNC)
+		{
+			Operand x = current_code->code.u.callfunc.x;
+			if(x->kind == TEMP)
+			{
+				if((current_code->next->code.kind == ASSIGN))
+				{
+					Operand y = current_code->next->code.u.assignop.y;
+					if(x == y)
+					{
+						if(!is_used_operand1(current_code->next , end , x))
+						{
+							current_code->code.u.callfunc.x = current_code->next->code.u.assignop.x;
+							deletecode(current_code->next);
+						}
+					}
+				}
+			}
+		}
+		current_code = current_code->next;
+	}
+	current_code = current->begin;
+	while(current_code != end->next)
+	{
+		if(current_code->code.kind == ASSIGN)
+		{
+			Operand x = current_code->code.u.assignop.x;
+			if(x->kind == TEMP)
+			{
+				if((current_code->next->code.kind == ADD) || (current_code->next->code.kind == SUB) || (current_code->next->code.kind == MUL) || (current_code->next->code.kind == DIV) )
+				{
+					if((x == current_code->next->code.u.alop.y) || (x == current_code->next->code.u.alop.z))
+					{
+						if(!is_used_operand1(current_code->next , end , x))
+						{
+							if(x == current_code->next->code.u.alop.y)
+								current_code->next->code.u.alop.y = current_code->code.u.assignop.y;
+							if(x == current_code->next->code.u.alop.z)
+								current_code->next->code.u.alop.z = current_code->code.u.assignop.y;
+							current_code = current_code->next;
+							deletecode(current_code->prev);
+						}
+
+					}
+
+				}
+			}
+		}
+		current_code = current_code->next;
+	}
 }
 
-struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct InterCodes* end)//消除死代码
+int is_used_operand1(struct InterCodes* current_code , struct InterCodes* end , Operand x)
 {
-	Operand x = current_code->code.u.assignop.x;
 	struct InterCodes* code_p = current_code->next;
 	int flag = 0;
 	while(code_p != end->next)
@@ -207,7 +278,16 @@ struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct 
 		}
 		code_p = code_p->next;
 	}
-	if(flag == 0)
+	return flag;
+}
+
+
+struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct InterCodes* end)//消除死代码
+{
+	Operand x = current_code->code.u.assignop.x;
+	if(current_code->prev->code.kind == RELOP_GOTO)
+		return current_code;
+	if(!is_used_operand1(current_code , end , x))
 	{
 		current_code = current_code->next;
 		deletecode(current_code->prev);
@@ -235,7 +315,7 @@ int is_used_operand(Operand x , Operand y)
 	return 0;
 }
 
-int assign_again(struct InterCodes* current_code, struct InterCodes* end)//判断是否为后续表达式的左值
+/*int assign_again(struct InterCodes* current_code, struct InterCodes* end)//判断是否为后续表达式的左值
 {
 	Operand x = current_code->code.u.assignop.x;
 	struct InterCodes* code_p = current_code->next;
@@ -293,7 +373,7 @@ struct InterCodes*  replace(struct InterCodes* current_code , struct InterCodes*
 	deletecode(current_code->prev);
 	return current_code;
 }
-
+*/
 void lookback_arg(struct InterCodes* current_code , struct InterCodes* begin)
 {
 	Operand x = current_code->code.u.arg.x;
