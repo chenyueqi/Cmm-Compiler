@@ -83,6 +83,7 @@ void outputoperand(Operand op , FILE* des)
 		case LABEL_SIGN:	fprintf(des , "label%d" , op->u.label_no);break;
 		case ADDRESS:		fprintf(des , "&v%d" , op->u.var_no);break;
 		case READ_ADDRESS:	fprintf(des , "*t%d" , op->u.temp_no);break;
+		default:break;
 	}
 }
 
@@ -107,10 +108,10 @@ void outputalop(struct InterCodes* intercode_p , FILE* des)
 		case SUB: fprintf(des , " - ");break;
 		case MUL: fprintf(des , " * ");break;
 		case DIV: fprintf(des , " / ");break;
+		default: break;
 	}
 	outputoperand(intercode_p->code.u.alop.z , des);
 	fprintf(des , "\n");
-
 }
 
 void outputassign(struct InterCodes* intercode_p , FILE* des)
@@ -703,8 +704,37 @@ void translate_cond(struct tree_node* p , Operand label_true , Operand label_fal
 {
 	if(p->children_num == 2)//Exp -> NOT Exp
 	{
-		translate_cond(p->children[1] , label_false , label_true);
-		return;
+		if(!strcmp(p->children[0]->token_name , "NOT"))
+		{
+			translate_cond(p->children[1] , label_false , label_true);
+			return;
+		}
+		else
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p , t1);
+
+			Operand relop = (Operand)malloc(sizeof(struct Operand_));
+			relop->kind = RELOP;
+			relop->u.relop = 5;//!=
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			t2->kind = CONSTANT;
+			t2->u.value = 0;
+	
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = RELOP_GOTO;
+			new_code->code.u.relopgoto.x = t1;
+			new_code->code.u.relopgoto.y = t2;
+			new_code->code.u.relopgoto.z = label_true;
+			new_code->code.u.relopgoto.relop = relop;
+			insertcode(new_code);
+	
+			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = GOTO;
+			new_code->code.u.gotolabel.x = label_false;
+			insertcode(new_code);
+		}
 	}
 	else if(p->children_num == 3)
 	{
@@ -774,6 +804,33 @@ void translate_cond(struct tree_node* p , Operand label_true , Operand label_fal
 			insertcode(new_code);
 
 			return;
+		}
+		else
+		{
+			Operand t1 = (Operand)malloc(sizeof(struct Operand_));
+			translate_exp(p , t1);
+
+			Operand relop = (Operand)malloc(sizeof(struct Operand_));
+			relop->kind = RELOP;
+			relop->u.relop = 5;//!=
+
+			Operand t2 = (Operand)malloc(sizeof(struct Operand_));
+			t2->kind = CONSTANT;
+			t2->u.value = 0;
+	
+			struct InterCodes* new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = RELOP_GOTO;
+			new_code->code.u.relopgoto.x = t1;
+			new_code->code.u.relopgoto.y = t2;
+			new_code->code.u.relopgoto.z = label_true;
+			new_code->code.u.relopgoto.relop = relop;
+			insertcode(new_code);
+	
+			new_code = (struct InterCodes*)malloc(sizeof(struct InterCodes));
+			new_code->code.kind = GOTO;
+			new_code->code.u.gotolabel.x = label_false;
+			insertcode(new_code);
+			return ;
 		}
 
 	}
@@ -1091,7 +1148,7 @@ void translate_args(struct tree_node* p , struct Arg** arg_list)
 	translate_exp(p->children[0] , t1);
 	/*参数是结构体的情况交给translate_exp来考虑*/
 
-	if(&arg_list == NULL)
+	if(*arg_list == NULL)
 	{
 		*arg_list = (struct Arg*)malloc(sizeof(struct Arg));
 		(*arg_list)->op = t1;

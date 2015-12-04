@@ -1,0 +1,23 @@
+int main() {
+	int A[10];
+	int b;
+	A[0] = 0;
+	A[1] = 1;
+	A[2] = 2;
+	A[3] = 3;
+	A[4] = 4;
+
+	b = A[3];
+	A[5] = b;
+	
+
+	write(A[0]);
+	write(A[1]);
+	write(A[2]);
+	write(A[3]);
+	write(A[4]);
+	write(b);
+	write(A[5]);
+
+	return 0;
+}

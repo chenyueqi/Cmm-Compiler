@@ -90,6 +90,7 @@ int change_relop(int origin)
 		case 4: return 5; //== !=
 		case 5: return 4; //!= ==
 	}
+	return -1;
 }
 
 
@@ -170,7 +171,7 @@ void do_level2_optimize(struct basic_block* current)
 		if(current_code->code.kind == ASSIGN)
 		{
 			Operand x = current_code->code.u.assignop.x;
-			Operand y = current_code->code.u.assignop.y;
+		//	Operand y = current_code->code.u.assignop.y;
 			if(x->kind == TEMP)//存在优化可能
 				current_code = try_to_delete_death(current_code , end);
 		}
@@ -191,7 +192,7 @@ void do_level2_optimize(struct basic_block* current)
 			Operand x = current_code->code.u.alop.x;
 			if(x->kind == TEMP)
 			{
-				if((current_code->next->code.kind == ASSIGN))
+				if((current_code->next->code.kind == ASSIGN) && (current_code->next->code.u.assignop.x->kind != READ_ADDRESS))
 				{
 					Operand y = current_code->next->code.u.assignop.y;
 					if(x == y)
@@ -210,7 +211,7 @@ void do_level2_optimize(struct basic_block* current)
 			Operand x = current_code->code.u.callfunc.x;
 			if(x->kind == TEMP)
 			{
-				if((current_code->next->code.kind == ASSIGN))
+				if((current_code->next->code.kind == ASSIGN) && (current_code->next->code.u.assignop.x->kind != READ_ADDRESS))
 				{
 					Operand y = current_code->next->code.u.assignop.y;
 					if(x == y)
@@ -275,6 +276,7 @@ int is_used_operand1(struct InterCodes* current_code , struct InterCodes* end , 
 			case ARG: if(is_used_operand(code_p->code.u.arg.x , x)) flag = 1; break;
 			case CALLFUNC: if(is_used_operand(code_p->code.u.callfunc.x , x)) flag = 1; break;
 			case WRITE: if(is_used_operand(code_p->code.u.write.x , x)) flag = 1; break; 
+			default: break;
 		}
 		code_p = code_p->next;
 	}
@@ -286,6 +288,8 @@ struct InterCodes* try_to_delete_death(struct InterCodes* current_code , struct 
 {
 	Operand x = current_code->code.u.assignop.x;
 	if(current_code->prev->code.kind == RELOP_GOTO)
+		return current_code;
+	if(current_code->next->code.kind == RELOP_GOTO)
 		return current_code;
 	if(!is_used_operand1(current_code , end , x))
 	{

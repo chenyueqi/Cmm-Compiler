@@ -1,35 +1,15 @@
 FUNCTION main :
 v1 := #1
-v2 := #1
-LABEL label1 :
-IF v1 >= #15 GOTO label3
-IF v2 >= #2 GOTO label3
-v1 := v1 + #1
-GOTO label1
-LABEL label3 :
-WRITE #1
-v1 := #1
-LABEL label5 :
-IF v1 >= #15 GOTO label7
-IF v2 <= #0 GOTO label7
-v1 := v1 + #1
-GOTO label5
-LABEL label7 :
-WRITE #1
-v1 := #1
-LABEL label9 :
-IF v2 >= #2 GOTO label11
-IF v1 >= #15 GOTO label11
-v1 := v1 + #1
-GOTO label9
-LABEL label11 :
-WRITE #1
-v1 := #1
-LABEL label13 :
-IF v2 <= #0 GOTO label15
-IF v1 >= #15 GOTO label15
-v1 := v1 + #1
-GOTO label13
-LABEL label15 :
-WRITE #1
+v2 := #0
+t1 := #0
+IF v1 <= v2 GOTO label4
+t1 := #1
+LABEL label4 :
+v3 := t1
+t2 := v3
+v4 := t2
+t3 := v4
+IF t3 == #0 GOTO label2
+WRITE v4
+LABEL label2 :
 RETURN #0
