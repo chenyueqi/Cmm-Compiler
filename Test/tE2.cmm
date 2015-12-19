@@ -1,0 +1,21 @@
+struct Vector{
+	int x, y;
+};
+
+int multiply(struct Vector v1, struct Vector v2)
+{
+	int a = v1.x - v2.x;
+	int b = v1.y - v2.y;
+	return a * b;
+}
+		
+int main()
+{
+	struct Vector s, t;
+	s.x = 25;
+	s.y = 36;
+	t.x = 15;
+	t.y = 16;
+	write(multiply(s,t));
+	return 0;
+}

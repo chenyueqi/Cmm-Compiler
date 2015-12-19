@@ -1,0 +1,21 @@
+int gcd(int x, int y)
+{
+	int result;
+	int temp;
+	temp = x - x / y * y;
+	while (temp != 0) {
+		x = y;
+		y = temp;
+		temp = x - x / y * y;
+	}
+	result = y;
+	return result;
+}
+
+int main()
+{
+	int m = read();
+	int n = read();
+	write(gcd(m,n));
+	return 0;
+}

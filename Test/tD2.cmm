@@ -1,0 +1,52 @@
+int absolute(int value)
+{
+	if (value >= 0)
+		return value;
+	else
+		return -value;
+
+}
+int main()
+{
+	int position[5];
+	int i = 0;
+	int j = 0;
+	int flag = 0;
+	int count = 0;
+	while (i < 5) {
+		position[i] = 0;
+		i = i + 1;
+	}
+	while(position[4] != 1) {
+		position[0] = position[0] + 1;
+		i = 0;
+		while (i < 4) {
+			if(position[i] == 4)
+				{
+					position[i] = 0;
+					position[i+1] = position[i+1] + 1;
+				}
+			i = i + 1;
+		}
+		flag = 1;
+		i = 0;
+		j = 0;
+		while (i < 4) {
+			 while (j < 4) {
+				if(i != j)
+				{
+					if(position[i] == position[j])
+					flag = 0;
+					else if(absolute(position[i] - position[j]) == absolute(i-j))
+					flag = 0;
+				}
+				j = j + 1;
+			}
+			j = 0;
+			i = i + 1;
+		}
+		count = count + flag;
+	}
+	write(count);
+	return 0;
+}

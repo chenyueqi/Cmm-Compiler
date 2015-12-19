@@ -30,7 +30,6 @@ int main(int argc , char** argv)
 	yyparse();
 	if(error_num == 0)
 	{
-//		display_tree(root , 0);
 		pre_occupy_func();
 		Seman_analysis(root);
 		initial_InterCodes();
@@ -86,8 +85,6 @@ struct tree_node* creat_node(int arity , char* token_name , struct YYLTYPE* curr
 	result->unit_name = (char*)malloc(strlen(token_name) + 1);
 	strcpy(result->unit_name , token_name);
 
-//	printf("\ntest:%s\n" , result->unit_name);
-
 	result->children_num = arity;
 	
 	
@@ -99,7 +96,6 @@ struct tree_node* creat_node(int arity , char* token_name , struct YYLTYPE* curr
 	for(; i < arity ; i++)
 		result->children[i] = va_arg(vap , struct tree_node*);
 	va_end(vap);
-//	printf("f**k tree_node\n");
 	return result;
 }
 void display_tree(struct tree_node* p , int count)

@@ -1,0 +1,34 @@
+struct score {
+	int weight;
+	int record;
+};
+
+struct Stu {
+	int id;
+	struct score cs[10];
+};
+
+int GPA(struct Stu s) {
+	int t = 0;
+	int result = 0;
+	while (t < 10) {
+		result = result + (s.cs[t].weight * s.cs[t].record);
+		t = t + 1;
+	}
+	
+	return result;
+}
+	
+int main()
+{
+	struct Stu James;
+	int i = 0;
+	while (i < 10) {
+		James.id = i;
+		James.cs[i].weight = i * 5;
+		James.cs[i].record = i * 100 - i * i * 10;
+		i = i + 1;
+	}
+	write(GPA(James));
+	return 0;
+}

@@ -1,0 +1,18 @@
+struct Worker {
+	int hour;
+	int wage;
+};
+
+int salary(int x, int y)
+{
+	return x * y;
+}
+		
+int main()
+{
+	struct Worker p;
+	p.hour = 2;
+	p.wage = 8;
+	write(salary(p.hour, p.wage));
+	return 0;
+}
