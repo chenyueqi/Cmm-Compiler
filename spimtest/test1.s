@@ -1,6 +1,7 @@
 .data
 _prompt: .asciiz "Enter an integer:"
 _ret: .asciiz "\n"
+v0: .space 8
 .globl main
 .text
 read:

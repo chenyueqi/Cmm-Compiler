@@ -34,6 +34,10 @@ int main(int argc , char** argv)
 		Seman_analysis(root);
 		initial_InterCodes();
 		translate(root);
+		outputInterCode(); // output intercode file
+		FILE* des = fopen(argv[2] , "w");
+		gen_asm(des);
+		fclose(des);
 		distroy_tree(root);
 	}
 	else
@@ -41,7 +45,7 @@ int main(int argc , char** argv)
 	yylineno = 1;
 	fclose(source);
 
-	outputInterCode();
+
 
 	return 0;
 /*	int i = 0;

@@ -3,7 +3,7 @@
 #include"FuncTable.h"
 #include"IdTable.h"
 
-#define out_file "out1.ir"
+#define out_file "inter.ir"
 
 extern void optimize();
 

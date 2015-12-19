@@ -29,4 +29,6 @@ void outputInterCode();
 
 void initial_InterCodes();
 
+void gen_asm(FILE* des);
+
 #endif
