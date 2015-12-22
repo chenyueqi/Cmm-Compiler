@@ -1,97 +1,18 @@
-FUNCTION absolute :
-PARAM v1
-IF v1 < #0 GOTO label2
-RETURN v1
-GOTO label3
-LABEL label2 :
-t1 := #0 - v1
-RETURN t1
-LABEL label3 :
 FUNCTION main :
-DEC v2 20 
-v3 := #0
-v4 := #0
-v5 := #0
-v6 := #0
-LABEL label4 :
-IF v3 >= #5 GOTO label6
-t2 := v3 * #4
-t3 := &v2 + t2
-*t3 := #0
-v3 := v3 + #1
-GOTO label4
-LABEL label6 :
-LABEL label7 :
-t7 := #4 * #4
-t8 := &v2 + t7
-IF *t8 == #1 GOTO label9
-t9 := #0 * #4
-t10 := &v2 + t9
-t11 := #0 * #4
-t12 := &v2 + t11
-t13 := *t12 + #1
-*t10 := t13
-v3 := #0
-LABEL label10 :
-IF v3 >= #4 GOTO label12
-t16 := v3 * #4
-t17 := &v2 + t16
-IF *t17 != #4 GOTO label14
-t18 := v3 * #4
-t19 := &v2 + t18
-*t19 := #0
-t23 := v3 + #1
-t21 := t23 * #4
-t22 := &v2 + t21
-t26 := v3 + #1
-t24 := t26 * #4
-t25 := &v2 + t24
-t27 := *t25 + #1
-*t22 := t27
-LABEL label14 :
-v3 := v3 + #1
-GOTO label10
-LABEL label12 :
-v5 := #1
-v3 := #0
-v4 := #0
-LABEL label15 :
-IF v3 >= #4 GOTO label17
-LABEL label18 :
-IF v4 >= #4 GOTO label20
-IF v3 == v4 GOTO label22
-t34 := v3 * #4
-t35 := &v2 + t34
-t36 := v4 * #4
-t37 := &v2 + t36
-IF *t35 != *t37 GOTO label24
-v5 := #0
-GOTO label25
-LABEL label24 :
-t39 := v3 * #4
-t40 := &v2 + t39
-t41 := v4 * #4
-t42 := &v2 + t41
-t43 := *t40 - *t42
-ARG t43
-t44 := CALL absolute
-t45 := v3 - v4
-ARG t45
-t46 := CALL absolute
-IF t44 != t46 GOTO label27
-v5 := #0
-LABEL label27 :
-LABEL label25 :
-LABEL label22 :
-v4 := v4 + #1
-GOTO label18
-LABEL label20 :
-v4 := #0
-v3 := v3 + #1
-GOTO label15
-LABEL label17 :
-v6 := v6 + v5
-GOTO label7
-LABEL label9 :
-WRITE v6
+v1 := #15
+v2 := #28
+t1 := v1 - v2
+t2 := t1 / #2
+v3 := t2 + v1
+t5 := v3 * #3
+v1 := t5 + v1
+v4 := v1 - v3
+WRITE v4
+t10 := v1 / v2
+t11 := t10 * v3
+t12 := v4 / v3
+t13 := t12 * #4
+t14 := t11 + t13
+v5 := t14 - v2
+WRITE v5
 RETURN #0

@@ -2,6 +2,7 @@
 #define __GEN__
 
 #include "translate.h"
+#include<time.h>
 
 void common_output(FILE*);
 void dec_process(FILE*);
