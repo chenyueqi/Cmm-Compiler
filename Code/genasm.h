@@ -6,24 +6,26 @@
 void common_output(FILE*);
 void dec_process(FILE*);
 
-typedef struct Operand_in_reg* Operand_in_reg;
-
-struct Operand_in_reg
-{
-	Operand op;
-	Operand_in_reg next;
-};
-
 struct Reg
 {
-	Operand_in_reg head;
-	int Cnt;
+	Operand op;
+};
+
+struct vt_chain
+{
+	Operand op;
+	struct vt_chain* next;
 };
 
 struct Reg reg_t[10];	//use freely belong to caller
+/*t寄存器中t0 , t1分配给常数使用，t2用于la指令*/
+
 struct Reg reg_s[9];	//use freely belong to callee
 struct Reg reg_a[4];	//for parameters
 struct Reg reg_v[2];	//for return value
+
+struct vt_chain* v_chain_head;
+struct vt_chain* t_chain_head;
 
 
 void outasmlabel(struct InterCodes* , FILE*);
@@ -44,6 +46,19 @@ void outasmread(struct InterCodes* , FILE*);
 void outasmwrite(struct InterCodes* , FILE*);
 
 void init_regfile();
+void init_vt_chain();
+
+void common_output(FILE*);
+void vt_process(FILE*);
+
+void add_space_in_alop(struct InterCodes* , FILE*);
+void add_space_in_assign(struct InterCodes* , FILE*);
+void add_space_in_call(struct InterCodes* , FILE*);
+void add_space_in_param(struct InterCodes* , FILE*);
+void add_space_in_read(struct InterCodes* , FILE*);
+
+void add_v(Operand , FILE*);
+void add_t(Operand , FILE*);
 
 int get_reg(Operand , FILE*);
 

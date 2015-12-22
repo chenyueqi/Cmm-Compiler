@@ -22,6 +22,8 @@ write:
 	jr $ra
 
 main:
+	la $t5, v0
+	sw $t4, 0($t5)
 	li $t5, 0
 	li $t4, 1
 	li $t3, 0
