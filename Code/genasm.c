@@ -172,6 +172,7 @@ void gen_asm(FILE* des)
 	init_regfile();
 	init_vt_chain();
 	common_output(des);
+	param_cnt = 0;
 	struct InterCodes* intercode_p = code_head;
 	while(intercode_p->next != code_head)
 	{
@@ -657,13 +658,35 @@ void outasmreturn(struct InterCodes* p  , FILE* des)
 			fprintf(des , "$s%d\n" , reg_num - 10);
 	}
 	fprintf(des, "\tjr $ra\n");
-}
-void outasmarg(struct InterCodes* p  , FILE* des)
-{
 
 }
+
+void outasmarg(struct InterCodes* p  , FILE* des)
+{
+	int reg_num = get_reg(p->code.u.arg.x , des);
+	fprintf(des , "\tmove $a%d, " , param_cnt);	
+	if(reg_num < 10)
+		fprintf(des , "$t%d\n" , reg_num);
+	else
+		fprintf(des , "$s%d\n" , reg_num - 10);
+	return ;
+}
+
 void outasmcallfunc(struct InterCodes* p  , FILE* des)
 {
+	int reg_num = get_reg(p->code.u.callfunc.x , des);
+	param_cnt = 0;//清空reg_a
+	fprintf(des , "\taddi $sp, $sp, -4\n");
+	fprintf(des , "\tsw $ra, 0($sp)\n");
+	fprintf(des , "\tjal %s\n" , p->code.u.callfunc.f->u.func_name);
+	fprintf(des , "\tlw $ra, 0($sp)\n");
+	fprintf(des , "\tmove ");
+	if(reg_num < 10)
+		fprintf(des , "$t%d, " , reg_num);
+	else
+		fprintf(des , "$s%d, " , reg_num - 10);
+	fprintf(des , "$v0\n");
+	return ;
 
 }
 void outasmparam(struct InterCodes* p  , FILE* des)
@@ -692,10 +715,49 @@ void outasmwrite(struct InterCodes* p  , FILE* des)
 
 int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或者地址或者要读取地址中的内容
 {
+	Operand new_op;
+	if(op->kind == ADDRESS)
+	{
+		new_op = (Operand)malloc(sizeof(struct Operand_));
+		new_op->kind = VARIABLE;
+		new_op->u.var_no = op->u.var_no;
+	}
+	else if(op->kind == READ_ADDRESS)
+	{
+		new_op = (Operand)malloc(sizeof(struct Operand_));
+		new_op->kind = TEMP;
+		new_op->u.var_no = op->u.temp_no;
+	}
+	else
+		new_op = op;
 	int seed1 = rand();
-	int i = 3;
+	int i = 0;
 	int hit = -1;
 	int free = -1;
+
+	for(; i < 4 ; i++)
+	{
+		if(reg_a[i].op == NULL)
+			continue;
+		if(reg_a[i].op->kind == new_op->kind)
+		{
+			if(new_op->kind == VARIABLE && reg_t[i].op->u.var_no == new_op->u.var_no)
+			{
+				hit = i;
+				break;
+			}
+			else if(new_op->kind == TEMP && reg_t[i].op->u.temp_no == new_op->u.temp_no)
+			{
+				hit = i;
+				break;
+			}
+		}
+	}
+	if(hit != -1)
+		return -i;//因为结构体和数组不作为参数，所以可以直接返回
+
+	i = 3;
+	hit = -1;
 	for(; i < 10 ; i++)
 	{
 		if(reg_t[i].op == NULL)
@@ -706,12 +768,12 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 		}
 		if(reg_t[i].op->kind == op->kind)
 		{
-			if(op->kind == VARIABLE && reg_t[i].op->u.var_no == op->u.var_no)
+			if(new_op->kind == VARIABLE && reg_t[i].op->u.var_no == new_op->u.var_no)
 			{
 				hit = i;
 				break;
 			}
-			else if(op->kind == TEMP && reg_t[i].op->u.temp_no == op->u.temp_no)
+			else if(new_op->kind == TEMP && reg_t[i].op->u.temp_no == new_op->u.temp_no)
 			{
 				hit = i;
 				break;
@@ -737,12 +799,12 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 				free = i;
 			continue;
 		}
-		if(op->kind == VARIABLE && reg_s[i].op->u.var_no == op->u.var_no)
+		if(new_op->kind == VARIABLE && reg_s[i].op->u.var_no == new_op->u.var_no)
 		{
 			hit = i;
 			break;
 		}
-		else if(op->kind == TEMP && reg_s[i].op->u.temp_no == op->u.temp_no)
+		else if(new_op->kind == TEMP && reg_s[i].op->u.temp_no == new_op->u.temp_no)
 		{
 			hit = i;
 			break;

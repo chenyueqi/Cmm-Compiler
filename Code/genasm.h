@@ -28,6 +28,7 @@ struct Reg reg_v[2];	//for return value
 struct vt_chain* v_chain_head;
 struct vt_chain* t_chain_head;
 
+int param_cnt;
 
 void outasmlabel(struct InterCodes* , FILE*);
 void outasmfunc(struct InterCodes* , FILE*);
