@@ -665,6 +665,7 @@ void outasmarg(struct InterCodes* p  , FILE* des)
 {
 	int reg_num = get_reg(p->code.u.arg.x , des);
 	fprintf(des , "\tmove $a%d, " , param_cnt);	
+	param_cnt++;
 	if(reg_num < 10)
 		fprintf(des , "$t%d\n" , reg_num);
 	else
@@ -718,9 +719,8 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 	Operand new_op;
 	if(op->kind == ADDRESS)
 	{
-		new_op = (Operand)malloc(sizeof(struct Operand_));
-		new_op->kind = VARIABLE;
-		new_op->u.var_no = op->u.var_no;
+		fprintf(des , "\tla $t2, _v%d\n" , op->u.var_no);
+		return 2;
 	}
 	else if(op->kind == READ_ADDRESS)
 	{
@@ -730,6 +730,7 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 	}
 	else
 		new_op = op;
+
 	int seed1 = rand();
 	int i = 0;
 	int hit = -1;
@@ -766,7 +767,7 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 				free = i;
 			continue;
 		}
-		if(reg_t[i].op->kind == op->kind)
+		if(reg_t[i].op->kind == new_op->kind)
 		{
 			if(new_op->kind == VARIABLE && reg_t[i].op->u.var_no == new_op->u.var_no)
 			{
@@ -781,11 +782,11 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 		}
 	}
 	if(hit != -1)
-		return hit;
+		goto here;
 	else if(free != -1)
 	{
-		reg_t[free].op = op;
-		return free;
+		reg_t[free].op = new_op;
+		goto here;
 	}
 
 	i = 0;
@@ -799,25 +800,32 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 				free = i;
 			continue;
 		}
-		if(new_op->kind == VARIABLE && reg_s[i].op->u.var_no == new_op->u.var_no)
+		if(reg_s[i].op->kind == new_op->kind)
 		{
-			hit = i;
-			break;
-		}
-		else if(new_op->kind == TEMP && reg_s[i].op->u.temp_no == new_op->u.temp_no)
-		{
-			hit = i;
-			break;
+			if(new_op->kind == VARIABLE && reg_s[i].op->u.var_no == new_op->u.var_no)
+			{
+				hit = i;
+				break;
+			}
+			else if(new_op->kind == TEMP && reg_s[i].op->u.temp_no == new_op->u.temp_no)
+			{
+				hit = i;
+				break;
+			}
 		}
 	}
 	if(hit != -1)
-		return hit + 10;
+	{
+		hit += 10;
+		goto here;
+	}
 	else if(free != -1)
 	{
 		reg_s[free].op = op;
-		return free + 10;
+		free += 10;
+		goto here;
 	}
-
+	/*
 
 	int replace_num = seed1%16 + 3;
 	if(replace_num < 10)
@@ -831,7 +839,6 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 		fprintf(des , "\tsw $t%d, 0($t2)\n" , replace_num);
 		reg_t[replace_num].op = op;
 		return replace_num;
-
 	}
 	else
 	{
@@ -844,5 +851,157 @@ int get_reg(Operand op , FILE* des)//op可能是一个变量，临时变量或�
 		fprintf(des , "\tsw $s%d, 0($t2)\n" , replace_num - 10);
 		reg_s[replace_num-10].op = op;
 		return replace_num;
+	}
+	*/
+
+here:	if(op->kind == VARIABLE)
+	{
+		if(hit != -1)
+			return hit;
+		else if(free != -1)
+			return free;
+		else
+		{
+			int replace_num = seed1%16 + 3;
+			if(replace_num < 10)
+			{
+				Operand replaced_op = reg_t[replace_num].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+
+				fprintf(des , "\tsw $t%d, 0($t2)\n" , replace_num);
+				reg_t[replace_num].op = new_op;
+				return replace_num;
+			}
+			else
+			{
+				Operand replaced_op = reg_s[replace_num - 10].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+				fprintf(des , "\tsw $s%d, 0($t2)\n" , replace_num - 10);
+				reg_s[replace_num-10].op = new_op;
+				return replace_num;
+			}
+		}
+	}
+	else if(op->kind == TEMP)
+	{
+		if(hit != -1)
+			return hit;
+		else if(free != -1)
+			return free;
+		else
+		{
+			int replace_num = seed1%16 + 3;
+			if(replace_num < 10)
+			{
+				Operand replaced_op = reg_t[replace_num].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+
+				fprintf(des , "\tsw $t%d, 0($t2)\n" , replace_num);
+				reg_t[replace_num].op = new_op;
+				return replace_num;
+			}
+			else
+			{
+				Operand replaced_op = reg_s[replace_num - 10].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+				fprintf(des , "\tsw $s%d, 0($t2)\n" , replace_num - 10);
+				reg_s[replace_num-10].op = new_op;
+				return replace_num;
+			}
+		}
+	}
+	else if(op->kind == READ_ADDRESS)
+	{
+		int replace_num1 = seed1%16 + 3;
+		int replace_num2 = replace_num1 + 1;
+		if(hit == -1)
+		{
+			if(replace_num1 < 10)
+			{
+				Operand replaced_op = reg_t[replace_num1].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+
+				fprintf(des , "\tsw $t%d, 0($t2)\n" , replace_num1);
+				reg_t[replace_num1].op = new_op;
+				hit = replace_num1;
+			}
+			else
+			{
+				Operand replaced_op = reg_s[replace_num1 - 10].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+				fprintf(des , "\tsw $s%d, 0($t2)\n" , replace_num1 - 10);
+				reg_s[replace_num1-10].op = new_op;
+				hit = replace_num1;
+			}
+		}
+		if(free == -1)
+		{
+			if(replace_num2 < 10)
+			{
+				Operand replaced_op = reg_t[replace_num2].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+
+				fprintf(des , "\tsw $t%d, 0($t2)\n" , replace_num2);
+				reg_t[replace_num2].op = new_op;
+				free = replace_num2;
+			}
+			else
+			{
+				Operand replaced_op = reg_s[replace_num1 - 10].op;
+				fprintf(des , "\tla $t2, _");
+				if(replaced_op->kind == VARIABLE)
+					fprintf(des , "v%d\n" , replaced_op->u.var_no);
+				else if(replaced_op->kind == TEMP)
+					fprintf(des , "t%d\n" , replaced_op->u.temp_no);
+				fprintf(des , "\tsw $s%d, 0($t2)\n" , replace_num1 - 10);
+				reg_s[replace_num1-10].op = new_op;
+				free = replace_num2;
+			}
+		}
+		fprintf(stderr , "lw ");
+		if(free < 10)
+			fprintf(des , "$t%d, " , free);
+		else
+			fprintf(des , "$s%d, " , free - 10);
+
+		if(hit < 10)
+			fprintf(des , "$t%d\n" , hit);
+		else
+			fprintf(des , "$s%d\n" , hit - 10);
+
+		return free;
+	}
+	else
+	{
+		fprintf(stderr , "something unexcepted here %s %d\n" , __FILE__ , __LINE__);
+		return 0;
 	}
 }
