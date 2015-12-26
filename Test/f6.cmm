@@ -1,0 +1,47 @@
+int main()
+{
+	int leap = 0;
+	int year = read();
+	int month = read();
+	int day = read();
+	int result = 0;
+	int a;
+	int b;
+	int c;
+	if(month == 1)
+		result = 0;
+	else if(month == 2)
+		result = 31;
+	else if(month == 3)
+		result = 59;
+	else if(month == 4)
+		result = 90;
+	else if(month == 5)
+		result = 120;
+	else if(month == 6)
+		result = 151;
+	else if(month == 7)
+		result = 181;
+	else if(month == 8)
+		result = 212;
+	else if(month == 9)
+		result = 243;
+	else if(month == 10)
+		result = 273;
+	else if(month == 11)
+		result = 304;
+	else if(month == 12)
+		result = 334;
+	else return 1;
+		result = result + day;
+	a = year - (year / 4) * 4;
+	b = year - (year / 100) * 100;
+	c = year - (year / 400) * 400;
+	if(c == 0 || (a == 0 && b != 0))
+		leap = 1;
+	else leap = 0;
+	if(leap == 1 && month > 2)
+		result = result + 1;
+	write(result);
+	return 0;
+}

@@ -2,7 +2,7 @@
 #define __GEN__
 
 #include "translate.h"
-#include<time.h>
+#include "optimize.h"
 
 void common_output(FILE*);
 void dec_process(FILE*);
@@ -19,7 +19,7 @@ struct vt_chain
 };
 
 struct Reg reg_t[10];	//use freely belong to caller
-/*t寄存器中t0 , t1分配给常数使用，t2用于la指令*/
+/*t寄存器中t0 , t1分配给常数使用，t2用于la指令 t3 t4用于取地址中内容操作*/
 
 struct Reg reg_s[9];	//use freely belong to callee
 struct Reg reg_a[4];	//for parameters
@@ -29,6 +29,9 @@ struct vt_chain* v_chain_head;
 struct vt_chain* t_chain_head;
 
 int param_cnt;
+int replace_num;
+int last_free;
+int read_addr_reg;
 
 void outasmlabel(struct InterCodes* , FILE*);
 void outasmfunc(struct InterCodes* , FILE*);
@@ -62,6 +65,7 @@ void add_space_in_read(struct InterCodes* , FILE*);
 void add_v(Operand , FILE*);
 void add_t(Operand , FILE*);
 
+void store_reg(FILE*);
 int get_reg(Operand , FILE*);
 
 #endif

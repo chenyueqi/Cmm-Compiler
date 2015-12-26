@@ -37,6 +37,7 @@ int main(int argc , char** argv)
 		outputInterCode(); // output intercode file
 		FILE* des = fopen(argv[2] , "w");
 		gen_asm(des);
+	//	gen_asm(stderr);
 		fclose(des);
 		distroy_tree(root);
 	}
